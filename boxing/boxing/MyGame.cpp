@@ -1,19 +1,4 @@
-/*
------------------------------------------------------------------------------
-Filename:    main.cpp
------------------------------------------------------------------------------
 
-This source file is part of the
-   ___                 __    __ _ _    _ 
-  /___\__ _ _ __ ___  / / /\ \ (_) | _(_)
- //  // _` | '__/ _ \ \ \/  \/ / | |/ / |
-/ \_// (_| | | |  __/  \  /\  /| |   <| |
-\___/ \__, |_|  \___|   \/  \/ |_|_|\_\_|
-      |___/                              
-      Tutorial Framework
-      http://www.ogre3d.org/tikiwiki/
------------------------------------------------------------------------------
-*/
 #include "MyGame.h"
 
 //-------------------------------------------------------------------------------------
@@ -26,14 +11,22 @@ MyGame::~MyGame(void)
 }
 
 //-------------------------------------------------------------------------------------
-//void createCamera(void)
-//{
-//	mCamera = mSceneMgr->createCamera("camera_1");
-//	mCamera->setPosition(0,100,200);
-//	mCamera->lookAt(0,0,0);
-//	mCamera->setNearClipDistance(5);
-//
-//}
+void MyGame::createCamera(void)
+{
+	mCamera = mSceneMgr->createCamera("camera_1");
+	mCamera->setPosition(0,10,300);
+	mCamera->lookAt(0,0,0);
+	mCamera->setNearClipDistance(5); // o quao proximo estou de um objeto pra ele sumir (e nao tampar a tela toda)
+	mCameraMan = new OgreBites::SdkCameraMan(mCamera);
+}
+
+void MyGame::createViewports(void)
+{
+	Ogre::Viewport* vp = mWindow->addViewport(mCamera);
+	vp->setBackgroundColour(Ogre::ColourValue(0,0,0)); // cor de fundo = preto
+	mCamera->setAspectRatio(Ogre::Real(vp->getActualWidth()) / Ogre::Real(vp->getActualHeight())); // ajusta o aspect ratio
+}
+
 void MyGame::createScene(void)
 {   
 	//== faz o chao =================================================
@@ -68,7 +61,7 @@ void MyGame::createScene(void)
 	//light1->setPosition(0,20,0);
     light1->setDiffuseColour(1.0f,1.0f,1.0f);// cor em RGB de 0 a 1
 	light1->setDirection(Ogre::Vector3(1,-1,0));
-
+	mSceneMgr->setAmbientLight(Ogre::ColourValue(0.7, 0.7, 0.7)); // alterea aqui pra clarear ou escurecer a tela
 	mSceneMgr->setShadowTechnique(Ogre:: SHADOWTYPE_STENCIL_ADDITIVE);// ativa sombra dos 3d no plano
 }
 

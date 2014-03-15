@@ -1,19 +1,4 @@
-/*
------------------------------------------------------------------------------
-Filename:    MyGame.h
------------------------------------------------------------------------------
 
-This source file is part of the
-   ___                 __    __ _ _    _ 
-  /___\__ _ _ __ ___  / / /\ \ (_) | _(_)
- //  // _` | '__/ _ \ \ \/  \/ / | |/ / |
-/ \_// (_| | | |  __/  \  /\  /| |   <| |
-\___/ \__, |_|  \___|   \/  \/ |_|_|\_\_|
-      |___/                              
-      Tutorial Framework
-      http://www.ogre3d.org/tikiwiki/
------------------------------------------------------------------------------
-*/
 #ifndef __MyGame_h_
 #define __MyGame_h_
 
@@ -27,7 +12,8 @@ public:
 
 protected:
     virtual void createScene(void);
-	//virtual void createCamera(void); //tive que adicionar isso aqui
+	virtual void createCamera(void);
+	virtual void createViewports(void);
 };
 
 #endif // #ifndef __MyGame_h_

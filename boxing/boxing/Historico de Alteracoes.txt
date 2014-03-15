@@ -1,3 +1,6 @@
 11/3 - 7h - André - Criei o  maincpp e MyGame.h (apenas renomeei os arquivos do exemplo) 
                     Crei Tank.cpp, classe para o tanque do jogo
 13/3 - 19h -André - Adicionei Bullet.cpp
+16/3 - 17h -André - Renomeei main.cpp para MyGame.cpp
+					Adiconei as funcoes: void MyGame::createCamera(void)
+										 void MyGame::createViewports(void)

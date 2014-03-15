@@ -88,7 +88,7 @@
   <ItemGroup>
     <ClCompile Include="BaseApplication.cpp" />
     <ClCompile Include="Bullet.cpp" />
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="MyGame.cpp" />
     <ClCompile Include="Tank.cpp" />
   </ItemGroup>
   <ItemGroup>
