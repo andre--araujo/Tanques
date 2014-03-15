@@ -27,7 +27,7 @@ public:
 
 protected:
     virtual void createScene(void);
-	virtual void createCamera(void); //tive que adicionar isso aqui
+	//virtual void createCamera(void); //tive que adicionar isso aqui
 };
 
 #endif // #ifndef __MyGame_h_

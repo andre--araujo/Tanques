@@ -26,14 +26,14 @@ MyGame::~MyGame(void)
 }
 
 //-------------------------------------------------------------------------------------
-void createCamera(void)
-{
-	mCamera = mSceneMgr->createCamera("camera_1");
-	mCamera->setPosition(0,100,200);
-	mCamera->lookAt(0,0,0);
-	mCamera->setNearClipDistance(5);
-
-}
+//void createCamera(void)
+//{
+//	mCamera = mSceneMgr->createCamera("camera_1");
+//	mCamera->setPosition(0,100,200);
+//	mCamera->lookAt(0,0,0);
+//	mCamera->setNearClipDistance(5);
+//
+//}
 void MyGame::createScene(void)
 {   
 	//== faz o chao =================================================
