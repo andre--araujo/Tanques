@@ -86,17 +86,17 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\Downloads\TutorialFramework19\BaseApplication.cpp" />
-    <ClCompile Include="..\..\..\..\..\Downloads\TutorialFramework19\main.cpp" />
+    <ClCompile Include="BaseApplication.cpp" />
     <ClCompile Include="Bullet.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="Tank.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\Downloads\TutorialFramework19\BaseApplication.h" />
-    <ClInclude Include="..\..\..\..\..\Downloads\TutorialFramework19\MyGame.h" />
+    <None Include="Historico de Alteracoes.txt" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Historico de Alteracoes.txt" />
+    <ClInclude Include="BaseApplication.h" />
+    <ClInclude Include="MyGame.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
