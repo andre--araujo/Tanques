@@ -1,3 +1,7 @@
+#include "btBulletDynamicsCommon.h"
+
+
+
 class Bullet
 {
 	private:
@@ -10,7 +14,10 @@ class Bullet
 		int x;  //posicionamento do nó
 		int y;
 		int z;
+		btBoxShape * box;
 
-		Bullet();
+		Bullet(){
+			btBroadphaseInterface* broadphase = new btDbvtBroadphase();
+		}
 
 };

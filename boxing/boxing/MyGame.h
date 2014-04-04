@@ -5,6 +5,8 @@
 #include <Terrain/OgreTerrain.h>
 #include <Terrain/OgreTerrainGroup.h>
 #include "BaseApplication.h"
+#include <Vector>
+#include "PhysicsManager.h"
 
 class MyGame : public BaseApplication
 {
@@ -17,10 +19,13 @@ private:
     void defineTerrain(long x, long y);
     void initBlendMaps(Ogre::Terrain* terrain);
     void configureTerrainDefaults(Ogre::Light* light);
+	std::vector<int> posY;
 
 public:
     MyGame(void);
     virtual ~MyGame(void);
+	virtual bool keyPressed( const OIS::KeyEvent &arg );
+
 
 protected:
     virtual void createScene(void);
@@ -28,7 +33,11 @@ protected:
 	virtual void createViewports(void);
 	virtual void createFrameListener(void);
     virtual void destroyScene(void);
-    virtual bool frameRenderingQueued(const Ogre::FrameEvent& evt);
+
+
+	PhysicsManager physicsManager;
+    bool frameRenderingQueued(const Ogre::FrameEvent& evt);
+	void newSphere();
 };
 
 #endif // #ifndef __MyGame_h_

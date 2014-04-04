@@ -57,7 +57,7 @@ protected:
 
     // Ogre::FrameListener
     virtual bool frameRenderingQueued(const Ogre::FrameEvent& evt);
-
+	
     // OIS::KeyListener
     virtual bool keyPressed( const OIS::KeyEvent &arg );
     virtual bool keyReleased( const OIS::KeyEvent &arg );
@@ -97,6 +97,8 @@ protected:
     OIS::InputManager* mInputManager;
     OIS::Mouse*    mMouse;
     OIS::Keyboard* mKeyboard;
+
+
 };
 
 #endif // #ifndef __BaseApplication_h_

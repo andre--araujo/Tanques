@@ -1,10 +1,15 @@
-
+#include "btBulletDynamicsCommon.h"
+#include <vector>
 #include "MyGame.h"
 
+
+static bool flag = false;
 //-------------------------------------------------------------------------------------
 MyGame::MyGame(void)
 {
+
 }
+
 //-------------------------------------------------------------------------------------
 MyGame::~MyGame(void)
 {
@@ -73,9 +78,15 @@ void MyGame::initBlendMaps(Ogre::Terrain* terrain)
 bool MyGame::frameRenderingQueued(const Ogre::FrameEvent& evt)
 {
     bool ret = BaseApplication::frameRenderingQueued(evt);
- 
+	Ogre::Vector3 pos;
+	if (flag){
+		for (int i = 0; i < physicsManager.mBodies.size(); i++){ // pra cada corpo solido que eu criei la na bullet eu pego o as varieveis de posicao e coloco no nó
+			pos = mSceneMgr->getSceneNode("node_sphere")->getPosition();
+			mSceneMgr->getSceneNode("node_sphere")->setPosition( pos.x, physicsManager.fall(i), pos.z);
+		}
+	}
     if (mTerrainGroup->isDerivedDataUpdateInProgress())
-    {
+	{
         mTrayMgr->moveWidgetToTray(mInfoLabel, OgreBites::TL_TOP, 0);
         mInfoLabel->show();
         if (mTerrainsImported)
@@ -167,8 +178,8 @@ void MyGame::createScene(void)
 	//tutorial 3
 	mSceneMgr->setSkyDome(true, "Examples/CloudySky", 5, 8); // um coubo em volta da camera com textura
 
-	mCamera->setPosition(Ogre::Vector3(0, 50, 16));
-    mCamera->lookAt(Ogre::Vector3(1963, 50, 1660));
+	mCamera->setPosition(Ogre::Vector3(100, 400, 100));
+    mCamera->lookAt(Ogre::Vector3(10, 400, 0));
     mCamera->setNearClipDistance(0.1);
     mCamera->setFarClipDistance(50000);
  
@@ -221,14 +232,38 @@ void MyGame::createScene(void)
 //	mSceneMgr->getRootSceneNode()->createChildSceneNode()->attachObject(floor);
 //	floor->setMaterialName("Examples/BeachStones"); //põe uma textura no plano/chão
 //
-//	//== coloca um boneco na cena  ==================================
-//	Ogre::Entity* someGuy = mSceneMgr->createEntity("someGuy","Sinbad.mesh");
-//	Ogre::SceneNode* node_someGuy = mSceneMgr->createSceneNode("node_someGuy"); //criei um nó para o someGuy
-//	mSceneMgr->getRootSceneNode()->addChild(node_someGuy);// colocoquei o nó do someGuy no nó raiz
-//	node_someGuy->attachObject(someGuy); //coloquei o someGuy (entidade) no nó correspondente
-//	//node_someGuy->setPosition(10,0,0);
-//	node_someGuy->scale(2,2,2);
-//
+/*	//== coloca um boneco na cena  ==================================
+	Ogre::Entity* someGuy = mSceneMgr->createEntity("someGuy","Sinbad.mesh");
+	Ogre::SceneNode* node_someGuy = mSceneMgr->createSceneNode("node_someGuy"); //criei um nó para o someGuy
+	mSceneMgr->getRootSceneNode()->addChild(node_someGuy);// colocoquei o nó do someGuy no nó raiz
+	node_someGuy->attachObject(someGuy); //coloquei o someGuy (entidade) no nó correspondente
+	node_someGuy->setPosition(10,450,0);
+	node_someGuy->scale(8,8,8);
+*/
+	
+	Ogre::Entity *sphere = mSceneMgr->createEntity("sphere", "Sinbad.mesh");
+	Ogre::SceneNode* node_sphere = mSceneMgr->createSceneNode("node_sphere"); //criei um nó para o someGuy
+	
+	mSceneMgr->getRootSceneNode()->addChild(node_sphere);// colocoquei o nó do someGuy no nó raiz
+	node_sphere->attachObject(sphere); //coloquei o someGuy (entidade) no nó correspondente
+	node_sphere->setPosition(-10,450,0);
+	node_sphere->scale(5,5,5);	
+	
+	physicsManager.createGround();
+	physicsManager.createSphere();
+
+	
+//	Ogre::SceneNode* node1 = mSceneMgr->getRootSceneNode()->createChildSceneNode(name);
+     
+//    btRigidBody &body = mPhysics.createBody(btTransform(btQuaternion::getIdentity(), btVector3(pos.x, pos.y, pos.z)), mass, shape);
+     
+//    mObjects.push_back(new SceneObject(*node1, body));
+     
+//    Ogre::Entity *entity = mSceneMgr->createEntity(name, "Prefab_Cube");
+//    node1->attachObject(entity);
+ 
+//    node1->setScale(size.x / 100.0f, size.y / 100.0f, size.z / 100.0f);
+	
 //	//== outro boneco na cena  =======================================
 //	Ogre::Entity* anotherGuy = mSceneMgr->createEntity("anotherGuy","ninja.mesh");
 //	Ogre::SceneNode* node_anotherGuy = mSceneMgr->createSceneNode("node_anotherGuy"); //criei um nó para o anotherGuy
@@ -247,8 +282,128 @@ void MyGame::createScene(void)
 //	light1->setDirection(Ogre::Vector3(1,-1,0));
 //	mSceneMgr->setAmbientLight(Ogre::ColourValue(0.7, 0.7, 0.7)); // alterea aqui pra clarear ou escurecer a tela
 //	mSceneMgr->setShadowTechnique(Ogre:: SHADOWTYPE_STENCIL_ADDITIVE);// ativa sombra dos 3d no plano
-		
+	//btBroadphaseInterface* broadphase = new btDbvtBroadphase();
 }
+
+void MyGame::newSphere(){
+	char * name;
+	itoa(physicsManager.createSphere(),name,10);
+	
+	Ogre::Entity *sphere = mSceneMgr->createEntity(strcat("sphere",name), "Sinbad.mesh");
+	Ogre::SceneNode* node_sphere = mSceneMgr->createSceneNode(strcat("node_sphere",name)); //criei um nó para o someGuy
+	
+	mSceneMgr->getRootSceneNode()->addChild(node_sphere);// colocoquei o nó do someGuy no nó raiz
+	node_sphere->attachObject(sphere); //coloquei o someGuy (entidade) no nó correspondente
+	node_sphere->setPosition(-10,450,0);
+	node_sphere->scale(5,5,5);	
+	
+
+}
+bool MyGame::keyPressed( const OIS::KeyEvent &arg )
+{
+    if (mTrayMgr->isDialogVisible()) return true;   // don't process any more keys if dialog is up
+	if (arg.key == OIS::KC_X)   // toggle visibility of advanced frame stats
+    {
+		
+		newSphere();
+		
+    }
+	if (arg.key == OIS::KC_V)   // toggle visibility of advanced frame stats
+    {
+		flag=!flag;
+
+		
+    }
+    if (arg.key == OIS::KC_F)   // toggle visibility of advanced frame stats
+    {
+        mTrayMgr->toggleAdvancedFrameStats();
+    }
+    else if (arg.key == OIS::KC_G)   // toggle visibility of even rarer debugging details
+    {
+        if (mDetailsPanel->getTrayLocation() == OgreBites::TL_NONE)
+        {
+            mTrayMgr->moveWidgetToTray(mDetailsPanel, OgreBites::TL_TOPRIGHT, 0);
+            mDetailsPanel->show();
+        }
+        else
+        {
+            mTrayMgr->removeWidgetFromTray(mDetailsPanel);
+            mDetailsPanel->hide();
+        }
+    }
+    else if (arg.key == OIS::KC_T)   // cycle polygon rendering mode
+    {
+        Ogre::String newVal;
+        Ogre::TextureFilterOptions tfo;
+        unsigned int aniso;
+
+        switch (mDetailsPanel->getParamValue(9).asUTF8()[0])
+        {
+        case 'B':
+            newVal = "Trilinear";
+            tfo = Ogre::TFO_TRILINEAR;
+            aniso = 1;
+            break;
+        case 'T':
+            newVal = "Anisotropic";
+            tfo = Ogre::TFO_ANISOTROPIC;
+            aniso = 8;
+            break;
+        case 'A':
+            newVal = "None";
+            tfo = Ogre::TFO_NONE;
+            aniso = 1;
+            break;
+        default:
+            newVal = "Bilinear";
+            tfo = Ogre::TFO_BILINEAR;
+            aniso = 1;
+        }
+
+        Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(tfo);
+        Ogre::MaterialManager::getSingleton().setDefaultAnisotropy(aniso);
+        mDetailsPanel->setParamValue(9, newVal);
+    }
+    else if (arg.key == OIS::KC_R)   // cycle polygon rendering mode
+    {
+        Ogre::String newVal;
+        Ogre::PolygonMode pm;
+
+        switch (mCamera->getPolygonMode())
+        {
+        case Ogre::PM_SOLID:
+            newVal = "Wireframe";
+            pm = Ogre::PM_WIREFRAME;
+            break;
+        case Ogre::PM_WIREFRAME:
+            newVal = "Points";
+            pm = Ogre::PM_POINTS;
+            break;
+        default:
+            newVal = "Solid";
+            pm = Ogre::PM_SOLID;
+        }
+
+        mCamera->setPolygonMode(pm);
+        mDetailsPanel->setParamValue(10, newVal);
+    }
+    else if(arg.key == OIS::KC_F5)   // refresh all textures
+    {
+        Ogre::TextureManager::getSingleton().reloadAll();
+    }
+    else if (arg.key == OIS::KC_SYSRQ)   // take a screenshot
+    {
+        mWindow->writeContentsToTimestampedFile("screenshot", ".jpg");
+    }
+    else if (arg.key == OIS::KC_ESCAPE)
+    {
+        mShutDown = true;
+    }
+
+    mCameraMan->injectKeyDown(arg);
+    return true;
+}
+
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
 #define WIN32_LEAN_AND_MEAN
