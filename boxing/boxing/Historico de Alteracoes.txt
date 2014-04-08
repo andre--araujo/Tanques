@@ -4,3 +4,4 @@
 16/3 - 17h -André - Renomeei main.cpp para MyGame.cpp
 					Adiconei as funcoes: void MyGame::createCamera(void)
 										 void MyGame::createViewports(void)
+anotacoes

@@ -80,11 +80,27 @@ bool MyGame::frameRenderingQueued(const Ogre::FrameEvent& evt)
     bool ret = BaseApplication::frameRenderingQueued(evt);
 	Ogre::Vector3 pos;
 	if (flag){
+		physicsManager.mWorld->stepSimulation(1/120.f,10); //(quando tempo dura um "step" , quantos steps a bullet pode demorar pra calcular as coisas)
 		for (int i = 0; i < physicsManager.mBodies.size(); i++){ // pra cada corpo solido que eu criei la na bullet eu pego o as varieveis de posicao e coloco no nó
-			pos = mSceneMgr->getSceneNode("node_sphere")->getPosition();
-			mSceneMgr->getSceneNode("node_sphere")->setPosition( pos.x, physicsManager.fall(i), pos.z);
+			
+			///////////
+			btTransform trans;
+			physicsManager.mBodies[i]->getMotionState()->getWorldTransform(trans);
+				
+			//return trans.getOrigin().getY();
+			//////////			
+			//pos = mSceneMgr->getSceneNode("node_sphere")->getPosition();
+			if (i == 0){
+			mSceneMgr->getSceneNode("node_sphere")->setPosition( trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ());
+			}
+			if (i == 1){
+			mSceneMgr->getSceneNode("node_sphere2")->setPosition( trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ());
+			}
+
 		}
 	}
+
+
     if (mTerrainGroup->isDerivedDataUpdateInProgress())
 	{
         mTrayMgr->moveWidgetToTray(mInfoLabel, OgreBites::TL_TOP, 0);
@@ -241,16 +257,28 @@ void MyGame::createScene(void)
 	node_someGuy->scale(8,8,8);
 */
 	
-	Ogre::Entity *sphere = mSceneMgr->createEntity("sphere", "Sinbad.mesh");
+	Ogre::Entity *sphere = mSceneMgr->createEntity("sphere", "sphere.mesh");//Ogre::SceneManager::PT_SPHERE);//"Sinbad.mesh");
 	Ogre::SceneNode* node_sphere = mSceneMgr->createSceneNode("node_sphere"); //criei um nó para o someGuy
 	
 	mSceneMgr->getRootSceneNode()->addChild(node_sphere);// colocoquei o nó do someGuy no nó raiz
 	node_sphere->attachObject(sphere); //coloquei o someGuy (entidade) no nó correspondente
 	node_sphere->setPosition(-10,450,0);
-	node_sphere->scale(5,5,5);	
+	node_sphere->scale(0.10,0.10,0.10);	 // sphere.mesh tem raio 100 por padrao, regular o raio pela escala!
 	
 	physicsManager.createGround();
 	physicsManager.createSphere();
+
+
+	//andre
+
+	Ogre::Entity *sphere2 = mSceneMgr->createEntity("sphere2", "sphere.mesh");//Ogre::SceneManager::PT_SPHERE);//"Sinbad.mesh");
+	Ogre::SceneNode* node_sphere2 = mSceneMgr->createSceneNode("node_sphere2"); //criei um nó para o someGuy
+	
+	mSceneMgr->getRootSceneNode()->addChild(node_sphere2);// colocoquei o nó do someGuy no nó raiz
+	node_sphere2->attachObject(sphere2); //coloquei o someGuy (entidade) no nó correspondente
+	node_sphere2->setPosition(-18,550,0);
+	node_sphere2->scale(0.15,0.15,0.15);	
+	physicsManager.createSphere2();
 
 	
 //	Ogre::SceneNode* node1 = mSceneMgr->getRootSceneNode()->createChildSceneNode(name);
@@ -302,13 +330,13 @@ void MyGame::newSphere(){
 bool MyGame::keyPressed( const OIS::KeyEvent &arg )
 {
     if (mTrayMgr->isDialogVisible()) return true;   // don't process any more keys if dialog is up
-	if (arg.key == OIS::KC_X)   // toggle visibility of advanced frame stats
+	if (arg.key == OIS::KC_X)   // trava o jogo todo
     {
 		
 		newSphere();
 		
     }
-	if (arg.key == OIS::KC_V)   // toggle visibility of advanced frame stats
+	if (arg.key == OIS::KC_V)   // dispara a fisica?
     {
 		flag=!flag;
 
