@@ -1,5 +1,5 @@
 #include "PhysicsManager.h"
-
+#include <Ogre.h>
 
 PhysicsManager::PhysicsManager(void)
 {
@@ -13,7 +13,7 @@ PhysicsManager::PhysicsManager(void)
 
         mWorld = new btDiscreteDynamicsWorld(mCollisionDispatcher,mBroadphase, mConstraintSolver,mCollisionConfig);
 
-        mWorld->setGravity(btVector3(0,-10,0));
+        mWorld->setGravity(btVector3(0,-100,0));
 
 }
 void PhysicsManager::createGround(){
@@ -27,10 +27,10 @@ void PhysicsManager::createGround(){
 
 }
 int PhysicsManager::createSphere(){
-		btCollisionShape* fallShape = new btSphereShape(10);
+		btCollisionShape* fallShape = new btSphereShape(28);
         btDefaultMotionState* fallMotionState =
                 new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1),btVector3(-10,450,0)));
-        btScalar mass = 1;
+        btScalar mass = 10;
         btVector3 fallInertia(0,0,0);
         fallShape->calculateLocalInertia(mass,fallInertia);
         btRigidBody::btRigidBodyConstructionInfo fallRigidBodyCI(mass,fallMotionState,fallShape,fallInertia);
@@ -40,13 +40,16 @@ int PhysicsManager::createSphere(){
 		mBodies.push_back(fallRigidBody);
 		return mBodies.size()-1;
 }
-float PhysicsManager::fall(int i){
-    mWorld->stepSimulation(1/200.f,10);
+btVector3 PhysicsManager::fall(int i, const Ogre::FrameEvent &evt){
+    //mWorld->stepSimulation(1/200.f,10);
+
+	mWorld->stepSimulation(evt.timeSinceLastFrame);
 
     btTransform trans;
 	mBodies[i]->getMotionState()->getWorldTransform(trans);
-				
-	return trans.getOrigin().getY();
+	
+	btVector3 pos = trans.getOrigin();
+	return pos;
 
 }
 PhysicsManager::~PhysicsManager()

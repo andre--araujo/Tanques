@@ -1,7 +1,7 @@
 #include "btBulletDynamicsCommon.h"
 #include <vector>
 #include "MyGame.h"
-
+#include "BulletCollision\CollisionShapes\btHeightfieldTerrainShape.h"
 
 static bool flag = false;
 //-------------------------------------------------------------------------------------
@@ -82,7 +82,8 @@ bool MyGame::frameRenderingQueued(const Ogre::FrameEvent& evt)
 	if (flag){
 		for (int i = 0; i < physicsManager.mBodies.size(); i++){ // pra cada corpo solido que eu criei la na bullet eu pego o as varieveis de posicao e coloco no nó
 			pos = mSceneMgr->getSceneNode("node_sphere")->getPosition();
-			mSceneMgr->getSceneNode("node_sphere")->setPosition( pos.x, physicsManager.fall(i), pos.z);
+			pos = Ogre::Vector3(physicsManager.fall(i,evt));
+			mSceneMgr->getSceneNode("node_sphere")->setPosition(pos);
 		}
 	}
     if (mTerrainGroup->isDerivedDataUpdateInProgress())
@@ -222,6 +223,48 @@ void MyGame::createScene(void)
     }
 
 	mTerrainGroup->freeTemporaryResources();
+	
+	///create a few basic rigid bodies
+	// start with ground plane, 1500, 1500
+	Ogre::Terrain * pTerrain=mTerrainGroup->getTerrain(0,0);
+	float* terrainHeightData = pTerrain->getHeightData();
+	Ogre::Vector3 terrainPosition = pTerrain->getPosition();
+	float * pDataConvert= new float[pTerrain->getSize() *pTerrain->getSize()];
+	for(int i=0;i<pTerrain->getSize();i++)
+		memcpy(
+			pDataConvert+pTerrain->getSize() * i, // source
+			terrainHeightData + pTerrain->getSize() * (pTerrain->getSize()-i-1), // target
+			sizeof(float)*(pTerrain->getSize()) // size
+		);
+
+	// TERRAIN PHYSICS BEGIN
+	float metersBetweenVertices = pTerrain->getWorldSize()/(pTerrain->getSize()-1); 
+	btVector3 localScaling(metersBetweenVertices, 1, metersBetweenVertices);
+	btHeightfieldTerrainShape* groundShape = new btHeightfieldTerrainShape(
+		 pTerrain->getSize(),
+		 pTerrain->getSize(),
+		 pDataConvert,
+		 1/*ignore*/,
+		 pTerrain->getMinHeight(),
+		 pTerrain->getMaxHeight(),
+		 1,
+		 PHY_FLOAT,
+		 true);
+	groundShape->setUseDiamondSubdivision(true);
+	groundShape->setLocalScaling(localScaling);
+	btRigidBody * mGroundBody = new btRigidBody(0, new btDefaultMotionState(), groundShape);
+	mGroundBody->getWorldTransform().setOrigin(
+		 btVector3( terrainPosition.x, 
+		 terrainPosition.y + (pTerrain->getMaxHeight()-pTerrain->getMinHeight())/2,
+		 terrainPosition.z));
+	mGroundBody->getWorldTransform().setRotation(
+		btQuaternion(Ogre::Quaternion::IDENTITY.x,
+		 Ogre::Quaternion::IDENTITY.y,
+		 Ogre::Quaternion::IDENTITY.z,
+		 Ogre::Quaternion::IDENTITY.w));
+	physicsManager.mWorld->addRigidBody(mGroundBody);
+	physicsManager.mCollisionShapes.push_back(groundShape);
+	//TERRAIN PHYSICS END
 
 	//ate o tutorial 2
 //	//== faz o chao =================================================
@@ -249,7 +292,7 @@ void MyGame::createScene(void)
 	node_sphere->setPosition(-10,450,0);
 	node_sphere->scale(5,5,5);	
 	
-	physicsManager.createGround();
+	//physicsManager.createGround();
 	physicsManager.createSphere();
 
 	
