@@ -96,6 +96,7 @@
     <ClCompile Include="Bullet.cpp">
       <RuntimeLibrary Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
+    <ClCompile Include="gameObject.cpp" />
     <ClCompile Include="MyGame.cpp" />
     <ClCompile Include="PhysicsManager.cpp" />
     <ClCompile Include="Tank.cpp" />
@@ -105,6 +106,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BaseApplication.h" />
+    <ClInclude Include="gameObject.h" />
     <ClInclude Include="MyGame.h" />
     <ClInclude Include="PhysicsManager.h" />
   </ItemGroup>
