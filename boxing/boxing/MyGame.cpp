@@ -356,7 +356,7 @@ bool MyGame::keyPressed( const OIS::KeyEvent &arg )
 */
 	GameObject * s = new GameObject(Ogre::String("sphere2"),"sphere.mesh",Ogre::String("node_sphere2"),
 			mSceneMgr->getRootSceneNode(), Ogre::Vector3(1,450,1),
-			28,10,mSceneMgr,physicsManager.mWorld, new btVector3(1,450,1));
+			39,10,mSceneMgr,physicsManager.mWorld, new btVector3(1,450,1));
 	myObjects.push_back(s);
 		
     }

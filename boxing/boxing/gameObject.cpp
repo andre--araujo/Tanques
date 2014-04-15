@@ -4,8 +4,12 @@ GameObject::GameObject(	Ogre::String entityName,
 						char * mesh, 
 						Ogre::String nodeName, 
 						Ogre::SceneNode* parentNode, 
-				Ogre::Vector3 relativePosition, int collisionSphereRadius, btScalar mass, 
-				Ogre::SceneManager * sceneMgr, btDynamicsWorld * dWld, btVector3 * iPos)
+						Ogre::Vector3 relativePosition,//posicao do no da mesh
+						int radius,
+						btScalar mass, 
+						Ogre::SceneManager * sceneMgr,
+						btDynamicsWorld * dWld,
+						btVector3 * iPos) //posicao da figura fisica
 
 {
 	sceneManager = sceneMgr;
@@ -14,17 +18,19 @@ GameObject::GameObject(	Ogre::String entityName,
 					mesh, 
 					nodeName, 
 					parentNode, 
-					relativePosition
+					relativePosition,
+					radius
 					);
 	
-	initPhysics(mass,iPos,collisionSphereRadius);
+	initPhysics(mass,iPos,radius);
 }
 
 void GameObject::initGraphics(	Ogre::String entityName, 
 								char* mesh,
 								Ogre::String nodeName, 
 								Ogre::SceneNode* parentNode, 
-								Ogre::Vector3 relativePosition
+								Ogre::Vector3 relativePosition,
+								float radius
 								)
 {
 	//Ogre::Entity *sphere = mSceneMgr->createEntity("sphere", "sphere.mesh");//Sinbad
@@ -33,15 +39,15 @@ void GameObject::initGraphics(	Ogre::String entityName,
 	parentNode->addChild(sceneNode); // adiciona o nó na arvore de cena como filho de parent node
 	sceneNode->attachObject(sceneEntity); // associa nó à entidade
 	sceneNode->setPosition(relativePosition); // define a posicao do nó em relação a seu parentNode
-	sceneNode->scale(0.28,0.28,0.28);
+	sceneNode->scale(radius/100, radius/100, radius/100);
 	
 }
 
 
-void GameObject::initPhysics(btScalar mass, btVector3 * iPos, int collisionSphereRadius)
+void GameObject::initPhysics(btScalar mass, btVector3 * iPos, int radius)
 {
 
-	collisionShape = new btSphereShape(collisionSphereRadius); // cria uma esfera de colisao
+	collisionShape = new btSphereShape(radius); // cria uma esfera de colisao
 
 	motionState = new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1),*iPos));
 	bodyMass = mass;
@@ -52,6 +58,12 @@ void GameObject::initPhysics(btScalar mass, btVector3 * iPos, int collisionSpher
 	rigidBody = new btRigidBody(rigidBodyCI);
 	dWorld->addRigidBody(rigidBody);
 }
+
+
+
+
+
+
 
 
 
