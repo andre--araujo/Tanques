@@ -29,8 +29,11 @@ class GameObject
 				const Ogre::SceneManager * sceneMgr, const btDynamicsWorld * dWld, btVector3 & iPos);
 */
 	GameObject(	Ogre::String entityName, char* mesh, Ogre::String nodeName, Ogre::SceneNode* parentNode, 
-				Ogre::Vector3 relativePosition, int radius, btScalar mass, 
-				Ogre::SceneManager * sceneMgr, btDynamicsWorld * dWld, btVector3 * iPos);
+				Ogre::Vector3 relativePosition, btScalar mass, 
+				Ogre::SceneManager * sceneMgr, btDynamicsWorld * dWld, btVector3 * iPos, int radius);
+	GameObject(	Ogre::String entityName, char* mesh, Ogre::String nodeName, Ogre::SceneNode* parentNode, 
+				Ogre::Vector3 relativePosition, btScalar mass, 
+				Ogre::SceneManager * sceneMgr, btDynamicsWorld * dWld, btVector3 * iPos, float x, float y, float z);
 	
 	void initGraphics(	Ogre::String entityName, 
 								char* mesh,
@@ -42,6 +45,15 @@ class GameObject
 
 	void startPhysicsSim();
 	~GameObject(void);
+
+	void initGraphicsBox(	Ogre::String entityName, 
+								char* mesh,
+								Ogre::String nodeName, 
+								Ogre::SceneNode* parentNode, 
+								Ogre::Vector3 relativePosition,
+								float x, float y, float z
+								);
+	void initPhysicsBox(btScalar mass, btVector3 * iPos, float x, float y, float z);
 
 };
 

@@ -296,8 +296,15 @@ void MyGame::createScene(void)
 	//physicsManager.createSphere();
 
 	GameObject * s = new GameObject("sphere","sphere.mesh","node_sphere",mSceneMgr->getRootSceneNode(),Ogre::Vector3(-10,450,1),
-										28,10,mSceneMgr,physicsManager.mWorld, new btVector3(-10,450,1));
+										10,mSceneMgr,physicsManager.mWorld, new btVector3(-10,450,1),28);
 	myObjects.push_back(s);
+
+	GameObject * t = new GameObject("box","cube.mesh","node_box",mSceneMgr->getRootSceneNode(),Ogre::Vector3(-13,550,1),
+										40,mSceneMgr,physicsManager.mWorld, new btVector3(-13,550,1),20,15,60);
+
+	myObjects.push_back(t);
+
+
 	//
 //	Ogre::SceneNode* node1 = mSceneMgr->getRootSceneNode()->createChildSceneNode(name);
      
@@ -356,7 +363,7 @@ bool MyGame::keyPressed( const OIS::KeyEvent &arg )
 */
 	GameObject * s = new GameObject(Ogre::String("sphere2"),"sphere.mesh",Ogre::String("node_sphere2"),
 			mSceneMgr->getRootSceneNode(), Ogre::Vector3(1,450,1),
-			39,10,mSceneMgr,physicsManager.mWorld, new btVector3(1,450,1));
+			10,mSceneMgr,physicsManager.mWorld, new btVector3(1,450,1),39);
 	myObjects.push_back(s);
 		
     }
