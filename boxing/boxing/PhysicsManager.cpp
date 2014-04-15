@@ -26,27 +26,28 @@ void PhysicsManager::createGround(){
         mWorld->addRigidBody(groundRigidBody);
 
 }
-int PhysicsManager::createSphere(){
-		btCollisionShape* fallShape = new btSphereShape(28);
-        btDefaultMotionState* fallMotionState =
-                new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1),btVector3(-10,450,0)));
-        btScalar mass = 10;
-        btVector3 fallInertia(0,0,0);
-        fallShape->calculateLocalInertia(mass,fallInertia);
-        btRigidBody::btRigidBodyConstructionInfo fallRigidBodyCI(mass,fallMotionState,fallShape,fallInertia);
-        btRigidBody* fallRigidBody = new btRigidBody(fallRigidBodyCI);
-        mWorld->addRigidBody(fallRigidBody);
-		mCollisionShapes.push_back(fallShape);
-		mBodies.push_back(fallRigidBody);
-		return mBodies.size()-1;
-}
-btVector3 PhysicsManager::fall(int i, const Ogre::FrameEvent &evt){
+//int PhysicsManager::createSphere(){
+//		btCollisionShape* fallShape = new btSphereShape(28);
+//        btDefaultMotionState* fallMotionState =
+//                new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1),btVector3(-10,450,0)));
+//        btScalar mass = 10;
+//        btVector3 fallInertia(0,0,0);
+//        fallShape->calculateLocalInertia(mass,fallInertia);
+//        btRigidBody::btRigidBodyConstructionInfo fallRigidBodyCI(mass,fallMotionState,fallShape,fallInertia);
+//        btRigidBody* fallRigidBody = new btRigidBody(fallRigidBodyCI);
+//        mWorld->addRigidBody(fallRigidBody);
+//		mCollisionShapes.push_back(fallShape);
+//		//mBodies.push_back(fallRigidBody);
+//
+//		return mBodies.size()-1;
+//}
+btVector3 PhysicsManager::fall(GameObject * obj, const Ogre::FrameEvent &evt){
     //mWorld->stepSimulation(1/200.f,10);
 
 	mWorld->stepSimulation(evt.timeSinceLastFrame);
 
     btTransform trans;
-	mBodies[i]->getMotionState()->getWorldTransform(trans);
+	obj->rigidBody->getMotionState()->getWorldTransform(trans);
 	
 	btVector3 pos = trans.getOrigin();
 	return pos;

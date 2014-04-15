@@ -3,18 +3,44 @@
 #include <Ogre.h>
 #pragma once
 
-class gameObject
+class GameObject
 {
-	Ogre::Entity * entity;
+	public:
+	Ogre::Entity * sceneEntity;
 	Ogre::SceneNode* sceneNode;
-	btCollisionShape* cShape;
-	btRigidBody* rBody;
-	btDefaultMotionState* mState;
+	btCollisionShape* collisionShape;
+	btRigidBody* rigidBody;
+	btDefaultMotionState* motionState;
+	btScalar bodyMass;
+	
+	Ogre::SceneManager * sceneManager;
+	btDynamicsWorld * dWorld; 
 
-public:
-	void initPhysics();
-	void initGraphics();
-	gameObject(void);
-	~gameObject(void);
+
+	void initPhysics(btScalar mass, btVector3 * iPos, int collisionSphereRadius);
+	//void initPhysics(btScalar mass, btVector3 & iPos, btVector3 & collisionBoxDim);
+	//void initPhysics(btScalar mass, btVector3 & iPos, btCollisionShape & collisionShape);
+
+	//void initGraphics(	Ogre::String entityName, Ogre::Mesh & mesh, Ogre::String nodeName, 
+	//					Ogre::SceneNode& parentNode, Ogre::Vector3 relativePosition);
+
+	/*GameObject(	Ogre::String entityName, Ogre::Mesh & mesh, Ogre::String nodeName, Ogre::SceneNode& parentNode, 
+				Ogre::Vector3 relativePosition, int collisionSphereRadius, btScalar mass, 
+				const Ogre::SceneManager * sceneMgr, const btDynamicsWorld * dWld, btVector3 & iPos);
+*/
+	GameObject(	Ogre::String entityName, char* mesh, Ogre::String nodeName, Ogre::SceneNode* parentNode, 
+				Ogre::Vector3 relativePosition, int collisionSphereRadius, btScalar mass, 
+				Ogre::SceneManager * sceneMgr, btDynamicsWorld * dWld, btVector3 * iPos);
+	
+	void initGraphics(	Ogre::String entityName, 
+								char* mesh,
+								Ogre::String nodeName, 
+								Ogre::SceneNode* parentNode, 
+								Ogre::Vector3 relativePosition
+								);
+
+	void startPhysicsSim();
+	~GameObject(void);
+
 };
 

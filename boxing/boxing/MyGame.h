@@ -5,12 +5,15 @@
 #include <Terrain/OgreTerrain.h>
 #include <Terrain/OgreTerrainGroup.h>
 #include "BaseApplication.h"
-#include <Vector>
+#include <vector>
 #include "PhysicsManager.h"
+#include "gameObject.h"
+
+#pragma once
 
 class MyGame : public BaseApplication
 {
-private:
+public:
     Ogre::TerrainGlobalOptions* mTerrainGlobals;
     Ogre::TerrainGroup* mTerrainGroup;
 	OgreBites::Label* mInfoLabel;
@@ -21,13 +24,13 @@ private:
     void configureTerrainDefaults(Ogre::Light* light);
 	std::vector<int> posY;
 
-public:
+
     MyGame(void);
     virtual ~MyGame(void);
 	virtual bool keyPressed( const OIS::KeyEvent &arg );
 
 
-protected:
+
     virtual void createScene(void);
 	virtual void createCamera(void);
 	virtual void createViewports(void);
@@ -37,7 +40,8 @@ protected:
 
 	PhysicsManager physicsManager;
     bool frameRenderingQueued(const Ogre::FrameEvent& evt);
-	void newSphere();
+	std::vector<GameObject *> myObjects;
+
 };
 
 #endif // #ifndef __MyGame_h_

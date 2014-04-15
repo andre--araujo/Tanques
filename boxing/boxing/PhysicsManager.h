@@ -2,6 +2,7 @@
 #include <btBulletDynamicsCommon.h>
 #include <vector>
 #include <Ogre.h>
+#include "gameObject.h"
 
 class PhysicsManager
 {
@@ -23,7 +24,7 @@ class PhysicsManager
 		void update(float ticks=1.f);
 		int createSphere();
 		void createGround();
-		btVector3 PhysicsManager::fall(int i, const Ogre::FrameEvent & evt);
+		btVector3 PhysicsManager::fall(GameObject * obj, const Ogre::FrameEvent & evt);
 		std::vector<btCollisionShape*> mCollisionShapes;
-		std::vector<btRigidBody*> mBodies;
+		//std::vector<btRigidBody*> mBodies;
 };

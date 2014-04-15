@@ -1,6 +1,7 @@
 #include "btBulletDynamicsCommon.h"
 #include <vector>
 #include "MyGame.h"
+#include "gameObject.h"
 #include "BulletCollision\CollisionShapes\btHeightfieldTerrainShape.h"
 
 static bool flag = false;
@@ -80,10 +81,9 @@ bool MyGame::frameRenderingQueued(const Ogre::FrameEvent& evt)
     bool ret = BaseApplication::frameRenderingQueued(evt);
 	Ogre::Vector3 pos;
 	if (flag){
-		for (int i = 0; i < physicsManager.mBodies.size(); i++){ // pra cada corpo solido que eu criei la na bullet eu pego o as varieveis de posicao e coloco no nó
-			pos = mSceneMgr->getSceneNode("node_sphere")->getPosition();
-			pos = Ogre::Vector3(physicsManager.fall(i,evt));
-			mSceneMgr->getSceneNode("node_sphere")->setPosition(pos);
+		for (int i = 0; i < myObjects.size(); i++){ // pra cada corpo solido que eu criei la na bullet eu pego o as varieveis de posicao e coloco no nó
+			pos = Ogre::Vector3(physicsManager.fall(myObjects[i],evt));
+			myObjects[i]->sceneNode->setPosition(pos);
 		}
 	}
     if (mTerrainGroup->isDerivedDataUpdateInProgress())
@@ -284,18 +284,21 @@ void MyGame::createScene(void)
 	node_someGuy->scale(8,8,8);
 */
 	
-	Ogre::Entity *sphere = mSceneMgr->createEntity("sphere", "Sinbad.mesh");
-	Ogre::SceneNode* node_sphere = mSceneMgr->createSceneNode("node_sphere"); //criei um nó para o someGuy
-	
-	mSceneMgr->getRootSceneNode()->addChild(node_sphere);// colocoquei o nó do someGuy no nó raiz
-	node_sphere->attachObject(sphere); //coloquei o someGuy (entidade) no nó correspondente
-	node_sphere->setPosition(-10,450,0);
-	node_sphere->scale(5,5,5);	
-	
-	//physicsManager.createGround();
-	physicsManager.createSphere();
+	//Ogre::Entity *sphere = mSceneMgr->createEntity("sphere", "sphere.mesh");//Sinbad
+	//Ogre::SceneNode* node_sphere = mSceneMgr->createSceneNode("node_sphere"); //criei um nó para o someGuy
+	//
+	//mSceneMgr->getRootSceneNode()->addChild(node_sphere);// colocoquei o nó do someGuy no nó raiz
+	//node_sphere->attachObject(sphere); //coloquei o someGuy (entidade) no nó correspondente
+	//node_sphere->setPosition(-10,450,0);
+	//node_sphere->scale(0.28,0.28,0.28);	
+	//
+	////physicsManager.createGround();
+	//physicsManager.createSphere();
 
-	
+	GameObject * s = new GameObject("sphere","sphere.mesh","node_sphere",mSceneMgr->getRootSceneNode(),Ogre::Vector3(-10,450,1),
+										28,10,mSceneMgr,physicsManager.mWorld, new btVector3(-10,450,1));
+	myObjects.push_back(s);
+	//
 //	Ogre::SceneNode* node1 = mSceneMgr->getRootSceneNode()->createChildSceneNode(name);
      
 //    btRigidBody &body = mPhysics.createBody(btTransform(btQuaternion::getIdentity(), btVector3(pos.x, pos.y, pos.z)), mass, shape);
@@ -327,28 +330,34 @@ void MyGame::createScene(void)
 //	mSceneMgr->setShadowTechnique(Ogre:: SHADOWTYPE_STENCIL_ADDITIVE);// ativa sombra dos 3d no plano
 	//btBroadphaseInterface* broadphase = new btDbvtBroadphase();
 }
-
-void MyGame::newSphere(){
-	char * name;
-	itoa(physicsManager.createSphere(),name,10);
-	
-	Ogre::Entity *sphere = mSceneMgr->createEntity(strcat("sphere",name), "Sinbad.mesh");
-	Ogre::SceneNode* node_sphere = mSceneMgr->createSceneNode(strcat("node_sphere",name)); //criei um nó para o someGuy
-	
-	mSceneMgr->getRootSceneNode()->addChild(node_sphere);// colocoquei o nó do someGuy no nó raiz
-	node_sphere->attachObject(sphere); //coloquei o someGuy (entidade) no nó correspondente
-	node_sphere->setPosition(-10,450,0);
-	node_sphere->scale(5,5,5);	
-	
-
-}
+//
+//void MyGame::newSphere(){
+//	char * name;
+//	itoa(physicsManager.createSphere(),name,10);
+//	
+//	Ogre::Entity *sphere = mSceneMgr->createEntity(strcat("sphere",name), "Sinbad.mesh");
+//	Ogre::SceneNode* node_sphere = mSceneMgr->createSceneNode(strcat("node_sphere",name)); //criei um nó para o someGuy
+//	
+//	mSceneMgr->getRootSceneNode()->addChild(node_sphere);// colocoquei o nó do someGuy no nó raiz
+//	node_sphere->attachObject(sphere); //coloquei o someGuy (entidade) no nó correspondente
+//	node_sphere->setPosition(-10,450,0);
+//	node_sphere->scale(5,5,5);	
+//	
+//
+//}
 bool MyGame::keyPressed( const OIS::KeyEvent &arg )
 {
     if (mTrayMgr->isDialogVisible()) return true;   // don't process any more keys if dialog is up
 	if (arg.key == OIS::KC_X)   // toggle visibility of advanced frame stats
     {
-		
-		newSphere();
+			/*GameObject(	sphere2, Ogre::Mesh & mesh, Ogre::String nodeName, Ogre::SceneNode& parentNode, 
+				Ogre::Vector3 relativePosition, int collisionSphereRadius, btScalar mass, btScalar inertia, 
+				const Ogre::SceneManager * sceneMgr, const btDynamicsWorld * dWld, btVector3 iPos);
+*/
+	GameObject * s = new GameObject(Ogre::String("sphere2"),"sphere.mesh",Ogre::String("node_sphere2"),
+			mSceneMgr->getRootSceneNode(), Ogre::Vector3(1,450,1),
+			28,10,mSceneMgr,physicsManager.mWorld, new btVector3(1,450,1));
+	myObjects.push_back(s);
 		
     }
 	if (arg.key == OIS::KC_V)   // toggle visibility of advanced frame stats
