@@ -24,7 +24,7 @@ class PhysicsManager
 		void update(float ticks=1.f);
 		int createSphere();
 		void createGround();
-		btVector3 PhysicsManager::fall(GameObject * obj, const Ogre::FrameEvent & evt);
+		void PhysicsManager::fall(GameObject *& obj, const Ogre::FrameEvent & evt);
 		std::vector<btCollisionShape*> mCollisionShapes;
 		//std::vector<btRigidBody*> mBodies;
 };

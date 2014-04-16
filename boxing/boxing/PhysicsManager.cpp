@@ -41,18 +41,19 @@ void PhysicsManager::createGround(){
 //
 //		return mBodies.size()-1;
 //}
-btVector3 PhysicsManager::fall(GameObject * obj, const Ogre::FrameEvent &evt){
+void PhysicsManager::fall(GameObject*& obj, const Ogre::FrameEvent &evt){
     //mWorld->stepSimulation(1/200.f,10);
 
 	mWorld->stepSimulation(evt.timeSinceLastFrame);
 
     btTransform trans;
-	obj->rigidBody->getMotionState()->getWorldTransform(trans);
-	
+	obj->rigidBody->getMotionState()->getWorldTransform(trans);	
 	btVector3 pos = trans.getOrigin();
-	return pos;
-
+	btQuaternion rotation(trans.getRotation());
+	obj->sceneNode->setPosition(pos.getX(),pos.getY(),pos.getZ());
+	obj->sceneNode->setOrientation(rotation.getW(), rotation.getX(), rotation.getY(), rotation.getZ());
 }
+
 PhysicsManager::~PhysicsManager()
 {
     for(int i = 0, len = mCollisionShapes.size();i < len; ++i)

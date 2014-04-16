@@ -81,9 +81,8 @@ bool MyGame::frameRenderingQueued(const Ogre::FrameEvent& evt)
     bool ret = BaseApplication::frameRenderingQueued(evt);
 	Ogre::Vector3 pos;
 	if (flag){
-		for (int i = 0; i < myObjects.size(); i++){ // pra cada corpo solido que eu criei la na bullet eu pego o as varieveis de posicao e coloco no nó
-			pos = Ogre::Vector3(physicsManager.fall(myObjects[i],evt));
-			myObjects[i]->sceneNode->setPosition(pos);
+		for (int i = 0; i < myObjects.size(); i++){ // pra cada corpo solido que eu criei la na bullet
+			physicsManager.fall(myObjects[i],evt); // eu rodo um frame, calculo colisoes e atualizo as posicoes e rotacoes dos nos
 		}
 	}
     if (mTerrainGroup->isDerivedDataUpdateInProgress())
@@ -299,8 +298,8 @@ void MyGame::createScene(void)
 										10,mSceneMgr,physicsManager.mWorld, new btVector3(-10,450,1),28);
 	myObjects.push_back(s);
 
-	GameObject * t = new GameObject("box","cube.mesh","node_box",mSceneMgr->getRootSceneNode(),Ogre::Vector3(-13,550,1),
-										40,mSceneMgr,physicsManager.mWorld, new btVector3(-13,550,1),20,15,60);
+	GameObject * t = new GameObject("box","cube.mesh","node_box",mSceneMgr->getRootSceneNode(),Ogre::Vector3(-13,550,13),
+										40,mSceneMgr,physicsManager.mWorld, new btVector3(-13,550,13),20,15,60);
 
 	myObjects.push_back(t);
 
