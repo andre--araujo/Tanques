@@ -89,7 +89,7 @@ void GameObject::initPhysics(btScalar mass, btVector3 * iPos, int radius)
 
 void GameObject::initPhysicsBox(btScalar mass, btVector3 * iPos, float x, float y, float z)
 {
-    collisionShape = new btBoxShape(btVector3(x / 2, y / 2, z / 2));   
+    collisionShape = new btBoxShape(btVector3(x / 2, y / 2, z / 2));
 	motionState = new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1),*iPos));
     bodyMass = mass;
 	btVector3 bodyInertia = btVector3(0,0,0);
