@@ -54,6 +54,11 @@ void PhysicsManager::fall(GameObject*& obj, const Ogre::FrameEvent &evt){
 	obj->sceneNode->setOrientation(rotation.getW(), rotation.getX(), rotation.getY(), rotation.getZ());
 }
 
+void PhysicsManager::move(GameObject*& obj, btVector3& velocity){
+    
+	obj->rigidBody->setLinearVelocity(velocity);
+}
+
 PhysicsManager::~PhysicsManager()
 {
     for(int i = 0, len = mCollisionShapes.size();i < len; ++i)

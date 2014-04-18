@@ -76,15 +76,85 @@ void MyGame::initBlendMaps(Ogre::Terrain* terrain)
     blendMap1->update();
 }
 
+bool MyGame::processUnbufferedInput(const Ogre::FrameEvent& evt)
+{
+	static bool mMouseDown = false;     // If a mouse button is depressed
+    static Ogre::Real mToggle = 0.0;    // The time left until next toggle
+    static Ogre::Real mRotate = 0.23;   // The rotate constant
+    static Ogre::Real mMove = 25;      // The movement constant
+	//btVector3 run = btVector3(10,0,0);
+   /* bool currMouse = mMouse->getMouseState().buttonDown(OIS::MB_Left);
+ 
+    if (currMouse && ! mMouseDown)
+    {
+        Ogre::Light* light = mSceneMgr->getLight("pointLight");
+        light->setVisible(! light->isVisible());
+    }
+ 
+    mMouseDown = currMouse;
+ 
+    mToggle -= evt.timeSinceLastFrame;
+ 
+    if ((mToggle < 0.0f ) && mKeyboard->isKeyDown(OIS::KC_1))
+    {
+        mToggle  = 0.5;
+        Ogre::Light* light = mSceneMgr->getLight("pointLight");
+        light->setVisible(! light->isVisible());
+    }*/
+ 
+    Ogre::Vector3 transVector = Ogre::Vector3::ZERO;
+ 
+    if (mKeyboard->isKeyDown(OIS::KC_I)) // Forward
+    {
+		physicsManager.move(myObjects[1], btVector3(10,0,0));       
+    }
+    if (mKeyboard->isKeyDown(OIS::KC_K)) // Backward
+    {
+		physicsManager.move(myObjects[1], btVector3(-10,0,0));       
+    }
+    if (mKeyboard->isKeyDown(OIS::KC_J)) // Left - yaw or strafe
+    {
+        if(mKeyboard->isKeyDown( OIS::KC_LSHIFT ))
+        {
+						
+            mSceneMgr->getSceneNode("node_box")->yaw(Ogre::Degree(mRotate * 5));
+        } else {
+			physicsManager.move(myObjects[1], btVector3(0,0,10));           
+        }
+    }
+    if (mKeyboard->isKeyDown(OIS::KC_L)) // Right - yaw or strafe
+    {
+        if(mKeyboard->isKeyDown( OIS::KC_LSHIFT ))
+        {
+            // Yaw right
+            mSceneMgr->getSceneNode("node_box")->yaw(Ogre::Degree(-mRotate * 5));
+        } else {
+			physicsManager.move(myObjects[1], btVector3(0,0,-10));            
+        }
+    }
+    if (mKeyboard->isKeyDown(OIS::KC_U)) // Up
+    {
+		physicsManager.move(myObjects[1], btVector3(0,10,0));        
+    }
+    if (mKeyboard->isKeyDown(OIS::KC_O)) // Down
+    {
+		physicsManager.move(myObjects[1], btVector3(0,-10,0));       
+    }
+
+    return true;
+}
+
 bool MyGame::frameRenderingQueued(const Ogre::FrameEvent& evt)
 {
     bool ret = BaseApplication::frameRenderingQueued(evt);
+
 	Ogre::Vector3 pos;
 	if (flag){
 		for (int i = 0; i < myObjects.size(); i++){ // pra cada corpo solido que eu criei la na bullet
 			physicsManager.fall(myObjects[i],evt); // eu rodo um frame, calculo colisoes e atualizo as posicoes e rotacoes dos nos
 		}
 	}
+
     if (mTerrainGroup->isDerivedDataUpdateInProgress())
 	{
         mTrayMgr->moveWidgetToTray(mInfoLabel, OgreBites::TL_TOP, 0);
@@ -107,8 +177,10 @@ bool MyGame::frameRenderingQueued(const Ogre::FrameEvent& evt)
             mTerrainGroup->saveAllTerrains(true);
             mTerrainsImported = false;
         }
-    }
- 
+    } 
+	
+	if(!processUnbufferedInput(evt)) return false;
+
     return ret;
 }
 
@@ -366,7 +438,7 @@ bool MyGame::keyPressed( const OIS::KeyEvent &arg )
 	myObjects.push_back(s);
 		
     }
-	if (arg.key == OIS::KC_V)   // toggle visibility of advanced frame stats
+	if (arg.key == OIS::KC_V)   // faz a fisica correr
     {
 		flag=!flag;
 
