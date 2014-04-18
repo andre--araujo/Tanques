@@ -39,8 +39,11 @@ public:
 
 
 	PhysicsManager physicsManager;
-    bool frameRenderingQueued(const Ogre::FrameEvent& evt);
+    virtual bool frameRenderingQueued(const Ogre::FrameEvent& evt);
 	std::vector<GameObject *> myObjects;
+
+	private:
+    bool processUnbufferedInput(const Ogre::FrameEvent& evt);
 
 };
 

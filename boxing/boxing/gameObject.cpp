@@ -66,8 +66,7 @@ void GameObject::initGraphics(	Ogre::String entityName,
 	parentNode->addChild(sceneNode); // adiciona o nó na arvore de cena como filho de parent node
 	sceneNode->attachObject(sceneEntity); // associa nó à entidade
 	sceneNode->setPosition(relativePosition); // define a posicao do nó em relação a seu parentNode
-	sceneNode->scale(radius/100, radius/100, radius/100); //pois a mesh tem dimensao 100
-	
+	sceneNode->scale(radius/100, radius/100, radius/100); //pois a mesh tem dimensao 100	
 }
 
 
