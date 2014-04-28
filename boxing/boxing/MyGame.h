@@ -32,10 +32,15 @@ public:
 
 
     virtual void createScene(void);
-	virtual void createCamera(void);
+	
 	virtual void createViewports(void);
 	virtual void createFrameListener(void);
     virtual void destroyScene(void);
+
+	void createCamera(void);
+	void changeCamera();
+	Ogre::Camera* mP1Camera;
+	void updateCameraPosition();
 
 
 	PhysicsManager physicsManager;

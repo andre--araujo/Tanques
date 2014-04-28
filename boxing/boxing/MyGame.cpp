@@ -154,7 +154,7 @@ bool MyGame::frameRenderingQueued(const Ogre::FrameEvent& evt)
 			physicsManager.fall(myObjects[i],evt); // eu rodo um frame, calculo colisoes e atualizo as posicoes e rotacoes dos nos
 		}
 	}
-
+	updateCameraPosition();
     if (mTerrainGroup->isDerivedDataUpdateInProgress())
 	{
         mTrayMgr->moveWidgetToTray(mInfoLabel, OgreBites::TL_TOP, 0);
@@ -231,11 +231,73 @@ void MyGame::destroyScene(void)
 
 void MyGame::createCamera(void)
 {
-	mCamera = mSceneMgr->createCamera("camera_1");
-	mCamera->setPosition(0,10,300);
-	mCamera->lookAt(0,0,0);
-	mCamera->setNearClipDistance(5); // o quao proximo estou de um objeto pra ele sumir (e nao tampar a tela toda)
+	mCamera = mSceneMgr->createCamera("globalCamera");
 	mCameraMan = new OgreBites::SdkCameraMan(mCamera);
+
+	mCamera->setPosition(Ogre::Vector3(100, 600, 100));
+    mCamera->lookAt(Ogre::Vector3(10, 400, 0));
+
+	mCamera->setNearClipDistance(0.1);
+    mCamera->setFarClipDistance(50000);
+
+	if (mRoot->getRenderSystem()->getCapabilities()->hasCapability(Ogre::RSC_INFINITE_FAR_PLANE))
+    {
+        mCamera->setFarClipDistance(0);   // enable infinite far clip distance if we can
+    }
+
+	/////////////////////////////////////////////////////////////////////////
+	////////////// my new camera ////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////
+
+
+	mP1Camera = mSceneMgr->createCamera("p1Camera");
+
+	mCamera->setPosition(Ogre::Vector3(100, 600, 100));
+    mCamera->lookAt(Ogre::Vector3(10, 400, 0));
+
+	mP1Camera->setNearClipDistance(0.1);
+    mP1Camera->setFarClipDistance(50000);
+ 
+    if (mRoot->getRenderSystem()->getCapabilities()->hasCapability(Ogre::RSC_INFINITE_FAR_PLANE))
+    {
+        mP1Camera->setFarClipDistance(0);   // enable infinite far clip distance if we can
+    }
+
+
+}
+void MyGame::updateCameraPosition(){
+	Ogre::Vector3 objPos = mSceneMgr->getSceneNode("node_box")->getPosition();
+
+	Ogre::Vector3 camPos = objPos + Ogre::Vector3(30,50,0);
+	Ogre::Vector3 camTargetPos = objPos + Ogre::Vector3(1000,0,0);
+
+	mP1Camera->setPosition(camPos);
+	mP1Camera->lookAt(camTargetPos);
+}
+
+void MyGame::changeCamera(){
+	
+	try{
+	if(mCameraMan->getCamera() != mP1Camera){
+		mCameraMan->setCamera(mP1Camera);
+		mWindow->getViewport(0)->setCamera(mP1Camera);
+	}else{
+		mCameraMan->setCamera(mCamera);
+		mWindow->getViewport(0)->setCamera(mCamera);
+	
+	}
+
+	}catch(Ogre::Exception e){
+#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
+    MessageBox( NULL, e.getFullDescription().c_str(), "An exception has occured!", MB_OK | MB_ICONERROR | MB_TASKMODAL);
+#else
+    std::cerr << "An exception has occured: " <<
+            e.getFullDescription().c_str() << std::endl;
+#endif
+	}
+
+	//if (mCameraMan->getCamera()->getPosition().x == (mSceneMgr->getSceneNode("node_box")->getPosition().x-30))
+	//	MessageBox( NULL, , "An exception has occured!", MB_OK | MB_ICONERROR | MB_TASKMODAL);
 }
 
 void MyGame::createViewports(void)
@@ -243,22 +305,14 @@ void MyGame::createViewports(void)
 	Ogre::Viewport* vp = mWindow->addViewport(mCamera);
 	vp->setBackgroundColour(Ogre::ColourValue(0,0,0)); // cor de fundo = preto
 	mCamera->setAspectRatio(Ogre::Real(vp->getActualWidth()) / Ogre::Real(vp->getActualHeight())); // ajusta o aspect ratio
+	mP1Camera->setAspectRatio(Ogre::Real(vp->getActualWidth()) / Ogre::Real(vp->getActualHeight()));
+
 }
 
 void MyGame::createScene(void)
 {   
 	//tutorial 3
 	mSceneMgr->setSkyDome(true, "Examples/CloudySky", 5, 8); // um coubo em volta da camera com textura
-
-	mCamera->setPosition(Ogre::Vector3(100, 400, 100));
-    mCamera->lookAt(Ogre::Vector3(10, 400, 0));
-    mCamera->setNearClipDistance(0.1);
-    mCamera->setFarClipDistance(50000);
- 
-    if (mRoot->getRenderSystem()->getCapabilities()->hasCapability(Ogre::RSC_INFINITE_FAR_PLANE))
-    {
-        mCamera->setFarClipDistance(0);   // enable infinite far clip distance if we can
-    }
 
 	Ogre::Vector3 lightdir(0.55, -0.3, 0.75);
     lightdir.normalise();
@@ -337,34 +391,7 @@ void MyGame::createScene(void)
 	physicsManager.mCollisionShapes.push_back(groundShape);
 	//TERRAIN PHYSICS END
 
-	//ate o tutorial 2
-//	//== faz o chao =================================================
-//	Ogre::Plane plane(Ogre::Vector3::UNIT_Y, -10);
-//	Ogre::MeshManager::getSingleton().createPlane("plane", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, plane,
-//1500,1500,20,20,true,1,5,5,Ogre::Vector3::UNIT_Z);// até aqui é como se eu criasse a .mesh do plano
-//	Ogre::Entity* floor = mSceneMgr->createEntity("floor", "plane");
-//	mSceneMgr->getRootSceneNode()->createChildSceneNode()->attachObject(floor);
-//	floor->setMaterialName("Examples/BeachStones"); //põe uma textura no plano/chão
-//
-/*	//== coloca um boneco na cena  ==================================
-	Ogre::Entity* someGuy = mSceneMgr->createEntity("someGuy","Sinbad.mesh");
-	Ogre::SceneNode* node_someGuy = mSceneMgr->createSceneNode("node_someGuy"); //criei um nó para o someGuy
-	mSceneMgr->getRootSceneNode()->addChild(node_someGuy);// colocoquei o nó do someGuy no nó raiz
-	node_someGuy->attachObject(someGuy); //coloquei o someGuy (entidade) no nó correspondente
-	node_someGuy->setPosition(10,450,0);
-	node_someGuy->scale(8,8,8);
-*/
-	
-	//Ogre::Entity *sphere = mSceneMgr->createEntity("sphere", "sphere.mesh");//Sinbad
-	//Ogre::SceneNode* node_sphere = mSceneMgr->createSceneNode("node_sphere"); //criei um nó para o someGuy
-	//
-	//mSceneMgr->getRootSceneNode()->addChild(node_sphere);// colocoquei o nó do someGuy no nó raiz
-	//node_sphere->attachObject(sphere); //coloquei o someGuy (entidade) no nó correspondente
-	//node_sphere->setPosition(-10,450,0);
-	//node_sphere->scale(0.28,0.28,0.28);	
-	//
-	////physicsManager.createGround();
-	//physicsManager.createSphere();
+
 
 	GameObject * s = new GameObject("sphere","sphere.mesh","node_sphere",mSceneMgr->getRootSceneNode(),Ogre::Vector3(-10,450,1),
 										10,mSceneMgr,physicsManager.mWorld, new btVector3(-10,450,1),28);
@@ -376,62 +403,19 @@ void MyGame::createScene(void)
 	myObjects.push_back(t);
 
 
-	//
-//	Ogre::SceneNode* node1 = mSceneMgr->getRootSceneNode()->createChildSceneNode(name);
-     
-//    btRigidBody &body = mPhysics.createBody(btTransform(btQuaternion::getIdentity(), btVector3(pos.x, pos.y, pos.z)), mass, shape);
-     
-//    mObjects.push_back(new SceneObject(*node1, body));
-     
-//    Ogre::Entity *entity = mSceneMgr->createEntity(name, "Prefab_Cube");
-//    node1->attachObject(entity);
- 
-//    node1->setScale(size.x / 100.0f, size.y / 100.0f, size.z / 100.0f);
-	
-//	//== outro boneco na cena  =======================================
-//	Ogre::Entity* anotherGuy = mSceneMgr->createEntity("anotherGuy","ninja.mesh");
-//	Ogre::SceneNode* node_anotherGuy = mSceneMgr->createSceneNode("node_anotherGuy"); //criei um nó para o anotherGuy
-//	mSceneMgr->getRootSceneNode()->addChild(node_anotherGuy);// colocoquei o nó do anotherGuy no nó raiz
-//	node_anotherGuy->attachObject(anotherGuy); //coloquei o anotherGuy (entidade) no nó correspondente
-//	node_anotherGuy->setPosition(10,-10,20);
-//	node_anotherGuy->scale(0.15,0.15,0.15);
-//	
-//	//== luz =========================================================
-//	Ogre::SceneNode* node_light = mSceneMgr->createSceneNode("node_light");
-//	mSceneMgr->getRootSceneNode()->addChild(node_light);
-//	Ogre::Light* light1 = mSceneMgr->createLight("light1");
-//	light1->setType(Ogre::Light::LT_DIRECTIONAL);//
-//	//light1->setPosition(0,20,0);
-//    light1->setDiffuseColour(1.0f,1.0f,1.0f);// cor em RGB de 0 a 1
-//	light1->setDirection(Ogre::Vector3(1,-1,0));
-//	mSceneMgr->setAmbientLight(Ogre::ColourValue(0.7, 0.7, 0.7)); // alterea aqui pra clarear ou escurecer a tela
-//	mSceneMgr->setShadowTechnique(Ogre:: SHADOWTYPE_STENCIL_ADDITIVE);// ativa sombra dos 3d no plano
-	//btBroadphaseInterface* broadphase = new btDbvtBroadphase();
+
 }
-//
-//void MyGame::newSphere(){
-//	char * name;
-//	itoa(physicsManager.createSphere(),name,10);
-//	
-//	Ogre::Entity *sphere = mSceneMgr->createEntity(strcat("sphere",name), "Sinbad.mesh");
-//	Ogre::SceneNode* node_sphere = mSceneMgr->createSceneNode(strcat("node_sphere",name)); //criei um nó para o someGuy
-//	
-//	mSceneMgr->getRootSceneNode()->addChild(node_sphere);// colocoquei o nó do someGuy no nó raiz
-//	node_sphere->attachObject(sphere); //coloquei o someGuy (entidade) no nó correspondente
-//	node_sphere->setPosition(-10,450,0);
-//	node_sphere->scale(5,5,5);	
-//	
-//
-//}
+
 bool MyGame::keyPressed( const OIS::KeyEvent &arg )
 {
+	
+
     if (mTrayMgr->isDialogVisible()) return true;   // don't process any more keys if dialog is up
-	if (arg.key == OIS::KC_X)   // toggle visibility of advanced frame stats
+
+	if (arg.key == OIS::KC_Q)changeCamera();
+
+	if (arg.key == OIS::KC_X)
     {
-			/*GameObject(	sphere2, Ogre::Mesh & mesh, Ogre::String nodeName, Ogre::SceneNode& parentNode, 
-				Ogre::Vector3 relativePosition, int collisionSphereRadius, btScalar mass, btScalar inertia, 
-				const Ogre::SceneManager * sceneMgr, const btDynamicsWorld * dWld, btVector3 iPos);
-*/
 	GameObject * s = new GameObject(Ogre::String("sphere2"),"sphere.mesh",Ogre::String("node_sphere2"),
 			mSceneMgr->getRootSceneNode(), Ogre::Vector3(1,450,1),
 			10,mSceneMgr,physicsManager.mWorld, new btVector3(1,450,1),39);
@@ -441,8 +425,6 @@ bool MyGame::keyPressed( const OIS::KeyEvent &arg )
 	if (arg.key == OIS::KC_V)   // faz a fisica correr
     {
 		flag=!flag;
-
-		
     }
     if (arg.key == OIS::KC_F)   // toggle visibility of advanced frame stats
     {
