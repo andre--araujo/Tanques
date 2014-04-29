@@ -42,6 +42,8 @@ public:
 	Ogre::Camera* mP1Camera;
 	void updateCameraPosition();
 
+	void passTheTurn();
+	GameObject*& getObjectofTurn(); //retorna um ponteiro para o objeto (tanque) que esta em seu turno
 
 	PhysicsManager physicsManager;
     virtual bool frameRenderingQueued(const Ogre::FrameEvent& evt);
@@ -49,6 +51,7 @@ public:
 
 	private:
     bool processUnbufferedInput(const Ogre::FrameEvent& evt);
+	int currentTurn; //	0 = tank1   1 = tank2
 
 };
 

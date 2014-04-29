@@ -106,20 +106,20 @@ bool MyGame::processUnbufferedInput(const Ogre::FrameEvent& evt)
  
     if (mKeyboard->isKeyDown(OIS::KC_I)) // Forward
     {
-		physicsManager.move(myObjects[1], btVector3(10,0,0));       
+		physicsManager.move(myObjects[currentTurn], btVector3(10,0,0));       
     }
     if (mKeyboard->isKeyDown(OIS::KC_K)) // Backward
     {
-		physicsManager.move(myObjects[1], btVector3(-10,0,0));       
+		physicsManager.move(myObjects[currentTurn], btVector3(-10,0,0));       
     }
     if (mKeyboard->isKeyDown(OIS::KC_J)) // Left - yaw or strafe
     {
         if(mKeyboard->isKeyDown( OIS::KC_LSHIFT ))
         {
 						
-            mSceneMgr->getSceneNode("node_box")->yaw(Ogre::Degree(mRotate * 5));
+           // mSceneMgr->getSceneNode("node_box")->yaw(Ogre::Degree(mRotate * 5));
         } else {
-			physicsManager.move(myObjects[1], btVector3(0,0,10));           
+			physicsManager.move(myObjects[currentTurn], btVector3(0,0,10));           
         }
     }
     if (mKeyboard->isKeyDown(OIS::KC_L)) // Right - yaw or strafe
@@ -127,18 +127,19 @@ bool MyGame::processUnbufferedInput(const Ogre::FrameEvent& evt)
         if(mKeyboard->isKeyDown( OIS::KC_LSHIFT ))
         {
             // Yaw right
-            mSceneMgr->getSceneNode("node_box")->yaw(Ogre::Degree(-mRotate * 5));
+            //mSceneMgr->getSceneNode("node_box")->yaw(Ogre::Degree(-mRotate * 5));
         } else {
-			physicsManager.move(myObjects[1], btVector3(0,0,-10));            
+			physicsManager.move(myObjects[currentTurn], btVector3(0,0,-10));            
         }
     }
     if (mKeyboard->isKeyDown(OIS::KC_U)) // Up
     {
-		physicsManager.move(myObjects[1], btVector3(0,10,0));        
+		physicsManager.move(myObjects[currentTurn], btVector3(0,10,0));        
     }
     if (mKeyboard->isKeyDown(OIS::KC_O)) // Down
     {
-		physicsManager.move(myObjects[1], btVector3(0,-10,0));       
+		physicsManager.move(myObjects[currentTurn], btVector3(0,-10,0));     
+		
     }
 
     return true;
@@ -266,7 +267,8 @@ void MyGame::createCamera(void)
 
 }
 void MyGame::updateCameraPosition(){
-	Ogre::Vector3 objPos = mSceneMgr->getSceneNode("node_box")->getPosition();
+	//Ogre::Vector3 objPos = mSceneMgr->getSceneNode("node_tank1")->getPosition();
+	Ogre::Vector3 objPos = myObjects[currentTurn]->sceneNode->getPosition();
 
 	Ogre::Vector3 camPos = objPos + Ogre::Vector3(30,50,0);
 	Ogre::Vector3 camTargetPos = objPos + Ogre::Vector3(1000,0,0);
@@ -393,17 +395,36 @@ void MyGame::createScene(void)
 
 
 
-	GameObject * s = new GameObject("sphere","sphere.mesh","node_sphere",mSceneMgr->getRootSceneNode(),Ogre::Vector3(-10,450,1),
-										10,mSceneMgr,physicsManager.mWorld, new btVector3(-10,450,1),28);
-	myObjects.push_back(s);
+	GameObject * tank1 = new GameObject("tank1","cube.mesh","node_tank1",mSceneMgr->getRootSceneNode(),Ogre::Vector3(-10,450,1),
+										10,mSceneMgr,physicsManager.mWorld, new btVector3(-10,450,1),28,10,30);
+	tank1->turn = 1;
+	myObjects.push_back(tank1);
 
-	GameObject * t = new GameObject("box","cube.mesh","node_box",mSceneMgr->getRootSceneNode(),Ogre::Vector3(-13,550,13),
+	GameObject * tank2 = new GameObject("tank2","cube.mesh","node_tank2",mSceneMgr->getRootSceneNode(),Ogre::Vector3(-13,550,13),
 										40,mSceneMgr,physicsManager.mWorld, new btVector3(-13,550,13),20,15,60);
+	tank2->turn = -1;
+	myObjects.push_back(tank2);
+	currentTurn = 0;	
 
-	myObjects.push_back(t);
+}
 
+void MyGame::passTheTurn()
+{
+	if (currentTurn == 0)
+	{
+		currentTurn = 1;
+		return;
+	}
+	else if(currentTurn == 1)
+	{
+		currentTurn = 0;
+		return;
+	}
+}
 
-
+GameObject*& MyGame::getObjectofTurn()
+{
+	return myObjects[currentTurn];
 }
 
 bool MyGame::keyPressed( const OIS::KeyEvent &arg )
@@ -411,6 +432,9 @@ bool MyGame::keyPressed( const OIS::KeyEvent &arg )
 	
 
     if (mTrayMgr->isDialogVisible()) return true;   // don't process any more keys if dialog is up
+
+	if (arg.key == OIS::KC_H)passTheTurn();
+	
 
 	if (arg.key == OIS::KC_Q)changeCamera();
 

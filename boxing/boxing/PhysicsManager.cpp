@@ -55,8 +55,13 @@ void PhysicsManager::fall(GameObject*& obj, const Ogre::FrameEvent &evt){
 }
 
 void PhysicsManager::move(GameObject*& obj, btVector3& velocity){
-    
-	obj->rigidBody->setLinearVelocity(velocity);
+    	
+	obj->rigidBody->setLinearVelocity(velocity);	
+	//obj->rigidBody->clearForces(); descomentar pra assim q vc soltar a tecla o tank parar de se mover
+
+	//btTransform trans;
+	//obj->rigidBody->getMotionState()->getWorldTransform(trans);	
+	//obj->rigidBody->setWorldTransform(btTransform(btQuaternion(trans.getRotation()),btVector3(trans.getOrigin().getX() + 0.5,trans.getOrigin().getY(),20)));
 }
 
 PhysicsManager::~PhysicsManager()

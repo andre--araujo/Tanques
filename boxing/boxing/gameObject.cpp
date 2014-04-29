@@ -74,7 +74,7 @@ void GameObject::initPhysics(btScalar mass, btVector3 * iPos, int radius)
 {
 
 	collisionShape = new btSphereShape(radius); // cria uma esfera de colisao
-
+	
 	motionState = new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1),*iPos));
 	bodyMass = mass;
 	btVector3 bodyInertia = btVector3(0,0,0);
@@ -82,6 +82,7 @@ void GameObject::initPhysics(btScalar mass, btVector3 * iPos, int radius)
 	collisionShape->calculateLocalInertia(mass,bodyInertia);
 	btRigidBody::btRigidBodyConstructionInfo rigidBodyCI(mass,motionState,collisionShape,bodyInertia);
 	rigidBody = new btRigidBody(rigidBodyCI);
+	rigidBody->setSleepingThresholds(0,0);
 	dWorld->addRigidBody(rigidBody);
 }
 
@@ -95,6 +96,7 @@ void GameObject::initPhysicsBox(btScalar mass, btVector3 * iPos, float x, float 
 	collisionShape->calculateLocalInertia(mass,bodyInertia);
 	btRigidBody::btRigidBodyConstructionInfo rigidBodyCI(mass,motionState,collisionShape,bodyInertia);
 	rigidBody = new btRigidBody(rigidBodyCI);
+	rigidBody->setSleepingThresholds(0,0);
 	dWorld->addRigidBody(rigidBody);
 
 }

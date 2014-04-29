@@ -6,6 +6,7 @@
 class GameObject
 {
 	public:
+	int turn; //uso pra saber quem eu pego na hora de trocar o turno
 	Ogre::Entity * sceneEntity;
 	Ogre::SceneNode* sceneNode;
 	btCollisionShape* collisionShape;
