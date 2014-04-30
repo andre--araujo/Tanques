@@ -112,25 +112,14 @@ bool MyGame::processUnbufferedInput(const Ogre::FrameEvent& evt)
     {
 		physicsManager.move(myObjects[currentTurn], btVector3(-10,0,0));       
     }
-    if (mKeyboard->isKeyDown(OIS::KC_J)) // Left - yaw or strafe
-    {
-        if(mKeyboard->isKeyDown( OIS::KC_LSHIFT ))
-        {
-						
-           // mSceneMgr->getSceneNode("node_box")->yaw(Ogre::Degree(mRotate * 5));
-        } else {
-			physicsManager.move(myObjects[currentTurn], btVector3(0,0,10));           
-        }
+    if (mKeyboard->isKeyDown(OIS::KC_J)) // rotaciona pra esquerda
+    {        
+			physicsManager.rotate(myObjects[currentTurn], btVector3(0,-0.4,0));        
+        
     }
-    if (mKeyboard->isKeyDown(OIS::KC_L)) // Right - yaw or strafe
-    {
-        if(mKeyboard->isKeyDown( OIS::KC_LSHIFT ))
-        {
-            // Yaw right
-            //mSceneMgr->getSceneNode("node_box")->yaw(Ogre::Degree(-mRotate * 5));
-        } else {
-			physicsManager.move(myObjects[currentTurn], btVector3(0,0,-10));            
-        }
+    if (mKeyboard->isKeyDown(OIS::KC_L)) // rotaciona pra direita
+    {        
+		physicsManager.rotate(myObjects[currentTurn], btVector3(0,0.4,0));             
     }
     if (mKeyboard->isKeyDown(OIS::KC_U)) // Up
     {

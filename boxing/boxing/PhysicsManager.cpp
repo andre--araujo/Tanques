@@ -26,21 +26,7 @@ void PhysicsManager::createGround(){
         mWorld->addRigidBody(groundRigidBody);
 
 }
-//int PhysicsManager::createSphere(){
-//		btCollisionShape* fallShape = new btSphereShape(28);
-//        btDefaultMotionState* fallMotionState =
-//                new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1),btVector3(-10,450,0)));
-//        btScalar mass = 10;
-//        btVector3 fallInertia(0,0,0);
-//        fallShape->calculateLocalInertia(mass,fallInertia);
-//        btRigidBody::btRigidBodyConstructionInfo fallRigidBodyCI(mass,fallMotionState,fallShape,fallInertia);
-//        btRigidBody* fallRigidBody = new btRigidBody(fallRigidBodyCI);
-//        mWorld->addRigidBody(fallRigidBody);
-//		mCollisionShapes.push_back(fallShape);
-//		//mBodies.push_back(fallRigidBody);
-//
-//		return mBodies.size()-1;
-//}
+
 void PhysicsManager::fall(GameObject*& obj, const Ogre::FrameEvent &evt){
     //mWorld->stepSimulation(1/200.f,10);
 
@@ -54,14 +40,17 @@ void PhysicsManager::fall(GameObject*& obj, const Ogre::FrameEvent &evt){
 	obj->sceneNode->setOrientation(rotation.getW(), rotation.getX(), rotation.getY(), rotation.getZ());
 }
 
-void PhysicsManager::move(GameObject*& obj, btVector3& velocity){
-    	
-	obj->rigidBody->setLinearVelocity(velocity);	
-	//obj->rigidBody->clearForces(); descomentar pra assim q vc soltar a tecla o tank parar de se mover
+void PhysicsManager::move(GameObject*& obj, btVector3& velocity)
+{    	
+	btVector3 relativeForce = btVector3(0,10,0); //isso aqui tudo é pra converter a direcao da velocidade pra direcao que seu objeto ta virado
+	btMatrix3x3& boxRot = obj->rigidBody->getWorldTransform().getBasis();
+    btVector3 correctedForce = boxRot * velocity;
+   	obj->rigidBody->setLinearVelocity(correctedForce);		
+}
 
-	//btTransform trans;
-	//obj->rigidBody->getMotionState()->getWorldTransform(trans);	
-	//obj->rigidBody->setWorldTransform(btTransform(btQuaternion(trans.getRotation()),btVector3(trans.getOrigin().getX() + 0.5,trans.getOrigin().getY(),20)));
+void PhysicsManager::rotate(GameObject*& obj, btVector3& velocity)
+{	
+	obj->rigidBody->setAngularVelocity(velocity);	
 }
 
 PhysicsManager::~PhysicsManager()

@@ -97,6 +97,7 @@ void GameObject::initPhysicsBox(btScalar mass, btVector3 * iPos, float x, float 
 	btRigidBody::btRigidBodyConstructionInfo rigidBodyCI(mass,motionState,collisionShape,bodyInertia);
 	rigidBody = new btRigidBody(rigidBodyCI);
 	rigidBody->setSleepingThresholds(0,0);
+	rigidBody->setFriction(2); //rever isso aqui
 	dWorld->addRigidBody(rigidBody);
 
 }
