@@ -68,7 +68,12 @@ void GameObject::initGraphics(	Ogre::String entityName,
 	sceneNode->setPosition(relativePosition); // define a posicao do nó em relação a seu parentNode
 	sceneNode->scale(radius/100, radius/100, radius/100); //pois a mesh tem dimensao 100	
 }
-
+void GameObject::setVelocity(GameObject * parentObj, btVector3& velocity){
+	//isso aqui tudo é pra converter a direcao da velocidade pra direcao que seu objeto ta virado
+	btMatrix3x3& boxRot = parentObj->rigidBody->getWorldTransform().getBasis();
+    btVector3 correctedForce = boxRot * velocity;
+   	rigidBody->setLinearVelocity(correctedForce);
+}
 
 void GameObject::initPhysics(btScalar mass, btVector3 * iPos, int radius)
 {
@@ -83,6 +88,7 @@ void GameObject::initPhysics(btScalar mass, btVector3 * iPos, int radius)
 	btRigidBody::btRigidBodyConstructionInfo rigidBodyCI(mass,motionState,collisionShape,bodyInertia);
 	rigidBody = new btRigidBody(rigidBodyCI);
 	rigidBody->setSleepingThresholds(0,0);
+	rigidBody->setFriction(3);
 	dWorld->addRigidBody(rigidBody);
 }
 

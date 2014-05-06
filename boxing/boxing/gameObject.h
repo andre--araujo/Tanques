@@ -16,7 +16,9 @@ class GameObject
 	
 	Ogre::SceneManager * sceneManager;
 	btDynamicsWorld * dWorld; 
-
+	
+	enum type;
+	void setVelocity(GameObject * parentObj, btVector3& velocity);
 
 	void initPhysics(btScalar mass, btVector3 * iPos, int radius);
 	//void initPhysics(btScalar mass, btVector3 & iPos, btVector3 & collisionBoxDim);
@@ -32,6 +34,7 @@ class GameObject
 	GameObject(	Ogre::String entityName, char* mesh, Ogre::String nodeName, Ogre::SceneNode* parentNode, 
 				Ogre::Vector3 relativePosition, btScalar mass, 
 				Ogre::SceneManager * sceneMgr, btDynamicsWorld * dWld, btVector3 * iPos, int radius);
+
 	GameObject(	Ogre::String entityName, char* mesh, Ogre::String nodeName, Ogre::SceneNode* parentNode, 
 				Ogre::Vector3 relativePosition, btScalar mass, 
 				Ogre::SceneManager * sceneMgr, btDynamicsWorld * dWld, btVector3 * iPos, float x, float y, float z);

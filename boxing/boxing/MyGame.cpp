@@ -1,5 +1,6 @@
 #include "btBulletDynamicsCommon.h"
 #include <vector>
+#include <String>
 #include "MyGame.h"
 #include "gameObject.h"
 #include "BulletCollision\CollisionShapes\btHeightfieldTerrainShape.h"
@@ -259,12 +260,46 @@ void MyGame::updateCameraPosition(){
 	//Ogre::Vector3 objPos = mSceneMgr->getSceneNode("node_tank1")->getPosition();
 	Ogre::Vector3 objPos = myObjects[currentTurn]->sceneNode->getPosition();
 
+	btMatrix3x3& boxRot = myObjects[currentTurn]->rigidBody->getWorldTransform().getBasis();
+	btVector3 aux = btVector3(100,0,0)* boxRot;
+	
 	Ogre::Vector3 camPos = objPos + Ogre::Vector3(30,50,0);
-	Ogre::Vector3 camTargetPos = objPos + Ogre::Vector3(1000,0,0);
+	//tank olhando sempre pra frente
+	Ogre::Vector3 camTargetPos = objPos + Ogre::Vector3(aux.getX(),aux.getY(),aux.getZ());
 
 	mP1Camera->setPosition(camPos);
 	mP1Camera->lookAt(camTargetPos);
 }
+
+void MyGame::shoot(GameObject * tank){//myObjects[currentTurn]
+	//posição do cano do tanque 
+	Ogre::Vector3 initialPos = tank->sceneNode->getPosition() + Ogre::Vector3(0,0,70);
+	//cria projetil
+	Ogre::String name = Ogre::String("projectile_");
+	//name.append((char*)myObjects.size());
+
+	Ogre::String nodeName = Ogre::String("node_");
+	nodeName.append(name);
+
+	
+	GameObject * proj = new GameObject(name,
+									"sphere.mesh",
+									nodeName,
+									tank->sceneNode, 
+									initialPos,
+									1,
+									mSceneMgr,
+									physicsManager.mWorld, 
+									new btVector3(initialPos.x,initialPos.y,initialPos.z),
+									15);
+	myObjects.push_back(proj);
+
+	
+	
+	proj->setVelocity(tank,btVector3(-30,500,0));
+	
+}
+void MyGame::checkProjectileCollision(){}
 
 void MyGame::changeCamera(){
 	
@@ -411,7 +446,7 @@ void MyGame::passTheTurn()
 	}
 }
 
-GameObject*& MyGame::getObjectofTurn()
+GameObject * MyGame::getObjectofTurn()
 {
 	return myObjects[currentTurn];
 }
@@ -429,11 +464,11 @@ bool MyGame::keyPressed( const OIS::KeyEvent &arg )
 
 	if (arg.key == OIS::KC_X)
     {
-	GameObject * s = new GameObject(Ogre::String("sphere2"),"sphere.mesh",Ogre::String("node_sphere2"),
+	/*GameObject * s = new GameObject(Ogre::String("sphere2"),"sphere.mesh",Ogre::String("node_sphere2"),
 			mSceneMgr->getRootSceneNode(), Ogre::Vector3(1,450,1),
 			10,mSceneMgr,physicsManager.mWorld, new btVector3(1,450,1),39);
-	myObjects.push_back(s);
-		
+	myObjects.push_back(s);*/
+		shoot(myObjects[currentTurn]);
     }
 	if (arg.key == OIS::KC_V)   // faz a fisica correr
     {
