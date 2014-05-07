@@ -70,9 +70,11 @@ void GameObject::initGraphics(	Ogre::String entityName,
 }
 void GameObject::setVelocity(GameObject * parentObj, btVector3& velocity){
 	//isso aqui tudo é pra converter a direcao da velocidade pra direcao que seu objeto ta virado
-	btMatrix3x3& boxRot = parentObj->rigidBody->getWorldTransform().getBasis();
-    btVector3 correctedForce = boxRot * velocity;
-   	rigidBody->setLinearVelocity(correctedForce);
+	//btMatrix3x3& boxRot = parentObj->rigidBody->getWorldTransform().getBasis();
+	btMatrix3x3& boxRot = rigidBody->getWorldTransform().getBasis();
+    //btVector3 correctedForce = boxRot * velocity;
+   	//rigidBody->setLinearVelocity(correctedForce);
+	rigidBody->setLinearVelocity(velocity);
 }
 
 void GameObject::initPhysics(btScalar mass, btVector3 * iPos, int radius)

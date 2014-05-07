@@ -273,7 +273,7 @@ void MyGame::updateCameraPosition(){
 
 void MyGame::shoot(GameObject * tank){//myObjects[currentTurn]
 	//posição do cano do tanque 
-	Ogre::Vector3 initialPos = tank->sceneNode->getPosition() + Ogre::Vector3(0,0,70);
+	Ogre::Vector3 initialPos = tank->sceneNode->getPosition() + Ogre::Vector3(0,70,0);
 	//cria projetil
 	Ogre::String name = Ogre::String("projectile_");
 	//name.append((char*)myObjects.size());
@@ -281,22 +281,19 @@ void MyGame::shoot(GameObject * tank){//myObjects[currentTurn]
 	Ogre::String nodeName = Ogre::String("node_");
 	nodeName.append(name);
 
-	
-	GameObject * proj = new GameObject(name,
-									"sphere.mesh",
-									nodeName,
-									tank->sceneNode, 
-									initialPos,
-									1,
-									mSceneMgr,
-									physicsManager.mWorld, 
-									new btVector3(initialPos.x,initialPos.y,initialPos.z),
-									15);
+	GameObject * proj = new GameObject( name,
+										"sphere.mesh",
+										nodeName,
+										tank->sceneNode, 
+										initialPos,
+										1,
+										mSceneMgr,
+										physicsManager.mWorld, 
+										new btVector3(initialPos.x,initialPos.y,initialPos.z),
+										50);
 	myObjects.push_back(proj);
 
-	
-	
-	proj->setVelocity(tank,btVector3(-30,500,0));
+	//proj->setVelocity(tank,btVector3(-30,500,0));
 	
 }
 void MyGame::checkProjectileCollision(){}
@@ -426,8 +423,22 @@ void MyGame::createScene(void)
 
 	GameObject * tank2 = new GameObject("tank2","cube.mesh","node_tank2",mSceneMgr->getRootSceneNode(),Ogre::Vector3(-13,550,13),
 										40,mSceneMgr,physicsManager.mWorld, new btVector3(-13,550,13),20,15,60);
-	tank2->turn = -1;
 	myObjects.push_back(tank2);
+	GameObject * proj = new GameObject( "proj",
+										"sphere.mesh",
+										"node_proj",
+										mSceneMgr->getRootSceneNode(), 
+										Ogre::Vector3(-30,450,1),
+										1,
+										mSceneMgr,
+										physicsManager.mWorld, 
+										new btVector3(-30,450,1),
+										10);
+	myObjects.push_back(proj);
+
+	proj->setVelocity(NULL,btVector3(-30,100,0));
+
+	tank2->turn = -1;
 	currentTurn = 0;	
 
 }
