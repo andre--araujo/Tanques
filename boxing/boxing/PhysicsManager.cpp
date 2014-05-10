@@ -40,6 +40,20 @@ void PhysicsManager::fall(GameObject*& obj, const Ogre::FrameEvent &evt){
 	obj->sceneNode->setOrientation(rotation.getW(), rotation.getX(), rotation.getY(), rotation.getZ());
 }
 
+void PhysicsManager::shootTheProjectil(GameObject*& obj, GameObject*& projectil, btVector3& velocity)
+{	
+	btVector3 relativeForce = btVector3(0,10,0); //esse bloco pega a posição e rotacao do tank pra ser usado no tiro
+	btMatrix3x3& boxRot = obj->rigidBody->getWorldTransform().getBasis();
+    btVector3 correctedForce = boxRot * velocity;
+	
+	btTransform trans;// aplica o q pegou ali de cima no projetil, levantando o y dele
+	obj->rigidBody->getMotionState()->getWorldTransform(trans);
+    trans.setOrigin(btVector3(btScalar(trans.getOrigin().getX()), btScalar(trans.getOrigin().getY() + 60), btScalar(trans.getOrigin().getZ())));
+
+	projectil->rigidBody->setWorldTransform(trans);
+	projectil->rigidBody->setLinearVelocity(correctedForce);
+}
+
 void PhysicsManager::move(GameObject*& obj, btVector3& velocity)
 {    	
 	btVector3 relativeForce = btVector3(0,10,0); //isso aqui tudo é pra converter a direcao da velocidade pra direcao que seu objeto ta virado

@@ -23,6 +23,7 @@ GameObject::GameObject(	Ogre::String entityName,   // contrutor para esfera
 					);
 	
 	initPhysics(mass,iPos,radius);
+	tag="";
 }
 
 
@@ -49,6 +50,7 @@ GameObject::GameObject(	Ogre::String entityName,  //construtor para boxes
 					);
 	
 	initPhysicsBox(mass,iPos,x, y, z);
+	tag="";
 }
 
 
@@ -92,6 +94,8 @@ void GameObject::initPhysics(btScalar mass, btVector3 * iPos, int radius)
 	rigidBody->setSleepingThresholds(0,0);
 	rigidBody->setFriction(3);
 	dWorld->addRigidBody(rigidBody);
+	rigidBody->setUserPointer(this);
+
 }
 
 
@@ -107,6 +111,7 @@ void GameObject::initPhysicsBox(btScalar mass, btVector3 * iPos, float x, float 
 	rigidBody->setSleepingThresholds(0,0);
 	rigidBody->setFriction(2); //rever isso aqui
 	dWorld->addRigidBody(rigidBody);
+	rigidBody->setUserPointer(this);
 
 }
 

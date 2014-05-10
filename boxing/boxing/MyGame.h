@@ -6,10 +6,13 @@
 #include <Terrain/OgreTerrainGroup.h>
 #include "BaseApplication.h"
 #include <vector>
+#include <string>
 #include "PhysicsManager.h"
 #include "gameObject.h"
 
 #pragma once
+
+using namespace std;
 
 class MyGame : public BaseApplication
 {
@@ -41,9 +44,9 @@ public:
 	void changeCamera();
 	Ogre::Camera* mP1Camera;
 	void updateCameraPosition();
-
-	void shoot(GameObject * tank);
-	void checkProjectileCollision();
+		
+	void checkCollision();
+	void updateHUD();
 
 	void passTheTurn();
 	GameObject* getObjectofTurn(); //retorna um ponteiro para o objeto (tanque) que esta em seu turno
@@ -55,6 +58,8 @@ public:
 	private:
     bool processUnbufferedInput(const Ogre::FrameEvent& evt);
 	int currentTurn; //	0 = tank1   1 = tank2
+	int cannonVelX;
+	int cannonVelY;
 
 };
 

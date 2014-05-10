@@ -1,6 +1,7 @@
 #include <btBulletDynamicsCommon.h>
 #include <vector>
 #include <Ogre.h>
+#include <string>
 #pragma once
 
 class GameObject
@@ -17,7 +18,8 @@ class GameObject
 	Ogre::SceneManager * sceneManager;
 	btDynamicsWorld * dWorld; 
 	
-	enum type;
+	std::string tag;
+
 	void setVelocity(GameObject * parentObj, btVector3& velocity);
 
 	void initPhysics(btScalar mass, btVector3 * iPos, int radius);

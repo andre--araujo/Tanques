@@ -24,9 +24,11 @@ class PhysicsManager
 		void update(float ticks=1.f);
 		int createSphere();
 		void createGround();
+
+		void PhysicsManager::shootTheProjectil(GameObject*& obj,  GameObject*& projectil,btVector3& velocity); //dispara o projetil a partir das coordenadas do tank
 		void PhysicsManager::fall(GameObject *& obj, const Ogre::FrameEvent & evt);
-		void PhysicsManager::move(GameObject*& obj, btVector3& velocity);
-		void PhysicsManager::rotate(GameObject*& obj, btVector3& velocity);
+		void PhysicsManager::move(GameObject*& obj, btVector3& velocity); // move o tank para frente/traz de acordo pra onde esta apontado
+		void PhysicsManager::rotate(GameObject*& obj, btVector3& velocity); // gira o tank pra esquerda/direita
 		std::vector<btCollisionShape*> mCollisionShapes;
 		//std::vector<btRigidBody*> mBodies;
 };

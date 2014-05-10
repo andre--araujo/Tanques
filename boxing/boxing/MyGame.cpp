@@ -115,22 +115,22 @@ bool MyGame::processUnbufferedInput(const Ogre::FrameEvent& evt)
     }
     if (mKeyboard->isKeyDown(OIS::KC_J)) // rotaciona pra esquerda
     {        
-			physicsManager.rotate(myObjects[currentTurn], btVector3(0,-0.4,0));        
+			physicsManager.rotate(myObjects[currentTurn], btVector3(0,0.4,0));        
         
     }
     if (mKeyboard->isKeyDown(OIS::KC_L)) // rotaciona pra direita
     {        
-		physicsManager.rotate(myObjects[currentTurn], btVector3(0,0.4,0));             
+		physicsManager.rotate(myObjects[currentTurn], btVector3(0,-0.4,0));             
     }
-    if (mKeyboard->isKeyDown(OIS::KC_U)) // Up
-    {
-		physicsManager.move(myObjects[currentTurn], btVector3(0,10,0));        
-    }
-    if (mKeyboard->isKeyDown(OIS::KC_O)) // Down
-    {
-		physicsManager.move(myObjects[currentTurn], btVector3(0,-10,0));     
-		
-    }
+  //  if (mKeyboard->isKeyDown(OIS::KC_U)) // Up
+  //  {
+		//physicsManager.move(myObjects[currentTurn], btVector3(0,10,0));        
+  //  }
+  //  if (mKeyboard->isKeyDown(OIS::KC_O)) // Down
+  //  {
+		//physicsManager.move(myObjects[currentTurn], btVector3(0,-10,0));     
+		//
+  //  }
 
     return true;
 }
@@ -138,7 +138,7 @@ bool MyGame::processUnbufferedInput(const Ogre::FrameEvent& evt)
 bool MyGame::frameRenderingQueued(const Ogre::FrameEvent& evt)
 {
     bool ret = BaseApplication::frameRenderingQueued(evt);
-
+	checkCollision();
 	Ogre::Vector3 pos;
 	if (flag){
 		for (int i = 0; i < myObjects.size(); i++){ // pra cada corpo solido que eu criei la na bullet
@@ -152,17 +152,19 @@ bool MyGame::frameRenderingQueued(const Ogre::FrameEvent& evt)
         mInfoLabel->show();
         if (mTerrainsImported)
         {
-            mInfoLabel->setCaption("Fazendo o terreno, sossega ai...");
+			updateHUD();
+           // mInfoLabel->setCaption("Fazendo o terreno, sossega ai...");
         }
         else
         {
-            mInfoLabel->setCaption("Atualizando as texturas, sossega ai...");
+			updateHUD();
+            //mInfoLabel->setCaption("Atualizando as texturas, sossega ai...");			
         }
     }
     else
     {
-        mTrayMgr->removeWidgetFromTray(mInfoLabel);
-        mInfoLabel->hide();
+       //mTrayMgr->removeWidgetFromTray(mInfoLabel);
+       // mInfoLabel->hide();
         if (mTerrainsImported)
         {
             mTerrainGroup->saveAllTerrains(true);
@@ -271,32 +273,64 @@ void MyGame::updateCameraPosition(){
 	mP1Camera->lookAt(camTargetPos);
 }
 
-void MyGame::shoot(GameObject * tank){//myObjects[currentTurn]
-	//posição do cano do tanque 
-	Ogre::Vector3 initialPos = tank->sceneNode->getPosition() + Ogre::Vector3(0,70,0);
-	//cria projetil
-	Ogre::String name = Ogre::String("projectile_");
-	//name.append((char*)myObjects.size());
 
-	Ogre::String nodeName = Ogre::String("node_");
-	nodeName.append(name);
+void MyGame::updateHUD() // gera a strng q aparece naquela telinha de cima
+{
+		string turn;
+		if (currentTurn == 0) { turn = "Turno: P1";}
+		else if (currentTurn == 1) { turn = "Turno: P2";}
+		string hp1 = "P1 hp: ";
+		string hp2 = "P2 hp: ";
+		string velx = "canhao X: " + to_string((_ULonglong)cannonVelX);
+		string vely = "canhao Y: " + to_string((_ULonglong)cannonVelY);
 
-	GameObject * proj = new GameObject( name,
-										"sphere.mesh",
-										nodeName,
-										tank->sceneNode, 
-										initialPos,
-										1,
-										mSceneMgr,
-										physicsManager.mWorld, 
-										new btVector3(initialPos.x,initialPos.y,initialPos.z),
-										50);
-	myObjects.push_back(proj);
 
-	//proj->setVelocity(tank,btVector3(-30,500,0));
-	
+		mInfoLabel->setCaption(turn+ "  "+ hp1 + "  "+ hp2 + "  "+ velx + "  "+ vely);
+		
 }
-void MyGame::checkProjectileCollision(){}
+
+void MyGame::checkCollision(){
+
+	btTransform trans;
+	trans.setOrigin(btVector3(btScalar(0),  btScalar(-1000), btScalar(0)));
+	
+	
+	GameObject * gameObjA;
+	GameObject * gameObjB;
+	int numManifolds = physicsManager.mWorld->getDispatcher()->getNumManifolds();
+    for (int i=0;i<numManifolds;i++){
+        //2
+		btPersistentManifold* contactManifold =  physicsManager.mWorld->getDispatcher()->getManifoldByIndexInternal(i);
+ 
+        //3
+		int numContacts = contactManifold->getNumContacts();
+		if (numContacts > 0){
+           
+            //5
+            const btCollisionObject* collisionObjA = contactManifold->getBody0();
+            const btCollisionObject* collisionObjB = contactManifold->getBody1();
+
+			for(int j = 0; j < myObjects.size(); j++ ){
+				//collisionObjB->getCollisionShape()->getName();
+				if((myObjects[j]->tag=="BULLET")){
+					if(collisionObjA==myObjects[j]->rigidBody){//if(collisionObjA->getUserPointer()==myObjects[j]->rigidBody->getUserPointer()){// descobrir se o btCollisionObject está relacinado ao objeto A
+						gameObjA = myObjects[j];
+						if(((GameObject*)collisionObjB->getUserPointer())->tag=="TANK")//gameObjA->rigidBody->setWorldTransform(trans);//destuir
+							myObjects[j]->rigidBody->setWorldTransform(trans);
+					}	
+					if(collisionObjB==myObjects[j]->rigidBody){					
+						gameObjB = myObjects[j];
+						if(((GameObject*)collisionObjA->getUserPointer())->tag=="TANK")//gameObjB->rigidBody->setWorldTransform(trans);//destuir
+							myObjects[j]->rigidBody->setWorldTransform(trans);
+						
+					}
+				}
+			}	
+		}
+	}
+}
+
+
 
 void MyGame::changeCamera(){
 	
@@ -412,37 +446,48 @@ void MyGame::createScene(void)
 		 Ogre::Quaternion::IDENTITY.w));
 	physicsManager.mWorld->addRigidBody(mGroundBody);
 	physicsManager.mCollisionShapes.push_back(groundShape);
+	mGroundBody->setUserPointer(this);
 	//TERRAIN PHYSICS END
 
 
 
-	GameObject * tank1 = new GameObject("tank1","cube.mesh","node_tank1",mSceneMgr->getRootSceneNode(),Ogre::Vector3(-10,450,1),
-										10,mSceneMgr,physicsManager.mWorld, new btVector3(-10,450,1),28,10,30);
+	GameObject * tank1 = new GameObject("tank1","cube.mesh","node_tank1",mSceneMgr->getRootSceneNode(),Ogre::Vector3(-10,300,1),
+										10,mSceneMgr,physicsManager.mWorld, new btVector3(-10,300,1),40,10,30);
 	tank1->turn = 1;
 	myObjects.push_back(tank1);
 
-	GameObject * tank2 = new GameObject("tank2","cube.mesh","node_tank2",mSceneMgr->getRootSceneNode(),Ogre::Vector3(-13,550,13),
-										40,mSceneMgr,physicsManager.mWorld, new btVector3(-13,550,13),20,15,60);
+
+	GameObject * tank2 = new GameObject("tank2","cube.mesh","node_tank2",mSceneMgr->getRootSceneNode(),Ogre::Vector3(-70,300,20),
+										40,mSceneMgr,physicsManager.mWorld, new btVector3(-70,300,20),40,10,30);
+
+	//GameObject * tank2 = new GameObject("tank2","cube.mesh","node_tank2",mSceneMgr->getRootSceneNode(),Ogre::Vector3(-13,550,13),
+	//									40,mSceneMgr,physicsManager.mWorld, new btVector3(-13,550,13),20,15,60);
+
 	myObjects.push_back(tank2);
 	GameObject * proj = new GameObject( "proj",
 										"sphere.mesh",
 										"node_proj",
 										mSceneMgr->getRootSceneNode(), 
-										Ogre::Vector3(-30,450,1),
+										Ogre::Vector3(-200,450,300),
 										1,
 										mSceneMgr,
 										physicsManager.mWorld, 
-										new btVector3(-30,450,1),
+										new btVector3(-200,450,300),
 										10);
 	myObjects.push_back(proj);
 
-	proj->setVelocity(NULL,btVector3(-30,100,0));
+	tank1->tag="TANK";
+	tank2->tag="TANK";
+	proj->tag="BULLET";
 
 	tank2->turn = -1;
-	currentTurn = 0;	
+	currentTurn = 0;	 // turno inicial
+	cannonVelX = 100; // velocidade de disparos iniciais
+	cannonVelY = 100;
 
+	 //mTrayMgr->moveWidgetToTray(mInfoLabel, OgreBites::TL_TOP, 0);
+     //mInfoLabel->show();
 }
-
 void MyGame::passTheTurn()
 {
 	if (currentTurn == 0)
@@ -455,6 +500,7 @@ void MyGame::passTheTurn()
 		currentTurn = 0;
 		return;
 	}
+	
 }
 
 GameObject * MyGame::getObjectofTurn()
@@ -468,19 +514,59 @@ bool MyGame::keyPressed( const OIS::KeyEvent &arg )
 
     if (mTrayMgr->isDialogVisible()) return true;   // don't process any more keys if dialog is up
 
-	if (arg.key == OIS::KC_H)passTheTurn();
-	
+	if (arg.key == OIS::KC_H)
+	{
+			passTheTurn();	
+			updateHUD();
+	}
 
 	if (arg.key == OIS::KC_Q)changeCamera();
 
+	if (arg.key == OIS::KC_U)
+	{
+		cannonVelY+=20;
+		updateHUD();
+	}
+
+	if (arg.key == OIS::KC_Y)
+	{
+		if (cannonVelY<=80)
+		{
+			cannonVelY = 80;
+			updateHUD();
+		}
+		else if (cannonVelY >= 100)
+		{
+			cannonVelY -=20;
+			updateHUD();
+		}
+	}
+
+	if (arg.key == OIS::KC_P)
+	{
+		cannonVelX+=20;
+		updateHUD();
+	}
+
+	if (arg.key == OIS::KC_O)
+	{
+		if (cannonVelX<=80)
+		{
+			cannonVelX = 80;
+			updateHUD();
+		}
+		else if (cannonVelX >= 100)
+		{
+			cannonVelX -=20;
+			updateHUD();
+		}
+	}
+
 	if (arg.key == OIS::KC_X)
     {
-	/*GameObject * s = new GameObject(Ogre::String("sphere2"),"sphere.mesh",Ogre::String("node_sphere2"),
-			mSceneMgr->getRootSceneNode(), Ogre::Vector3(1,450,1),
-			10,mSceneMgr,physicsManager.mWorld, new btVector3(1,450,1),39);
-	myObjects.push_back(s);*/
-		shoot(myObjects[currentTurn]);
-    }
+
+		physicsManager.shootTheProjectil(myObjects[currentTurn],myObjects[2], btVector3(cannonVelX,cannonVelY,0)); 
+	}
 	if (arg.key == OIS::KC_V)   // faz a fisica correr
     {
 		flag=!flag;
