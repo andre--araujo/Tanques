@@ -279,13 +279,14 @@ void MyGame::updateHUD() // gera a strng q aparece naquela telinha de cima
 		string turn;
 		if (currentTurn == 0) { turn = "Turno: P1";}
 		else if (currentTurn == 1) { turn = "Turno: P2";}
-		string hp1 = "P1 hp: ";
-		string hp2 = "P2 hp: ";
-		string velx = "canhao X: " + to_string((_ULonglong)cannonVelX);
-		string vely = "canhao Y: " + to_string((_ULonglong)cannonVelY);
+		
+		std::ostringstream ss;
 
+		ss << turn << "  " << "P1 hp: " << "P2 hp: " << "  " << "canhao X: " << cannonVelX <<  "  "
+			<< "canhao Y: " << cannonVelY << "  "<< "forca: " << shotForce  ;
 
-		mInfoLabel->setCaption(turn+ "  "+ hp1 + "  "+ hp2 + "  "+ velx + "  "+ vely);
+		std::string ret(ss.str());
+		mInfoLabel->setCaption(ret);
 		
 }
 
@@ -484,9 +485,7 @@ void MyGame::createScene(void)
 	currentTurn = 0;	 // turno inicial
 	cannonVelX = 100; // velocidade de disparos iniciais
 	cannonVelY = 100;
-
-	 //mTrayMgr->moveWidgetToTray(mInfoLabel, OgreBites::TL_TOP, 0);
-     //mInfoLabel->show();
+	shotForce = 1;
 }
 void MyGame::passTheTurn()
 {
@@ -524,48 +523,49 @@ bool MyGame::keyPressed( const OIS::KeyEvent &arg )
 
 	if (arg.key == OIS::KC_U)
 	{
-		cannonVelY+=20;
+		if (cannonVelX >= 20)
+		{
+		cannonVelY+=10;
+		cannonVelX-=10;
 		updateHUD();
+		}
 	}
 
 	if (arg.key == OIS::KC_Y)
-	{
-		if (cannonVelY<=80)
+	{		
+		if (cannonVelY >= 20)
 		{
-			cannonVelY = 80;
-			updateHUD();
-		}
-		else if (cannonVelY >= 100)
-		{
-			cannonVelY -=20;
-			updateHUD();
+			cannonVelY -=10;
+			cannonVelX +=10;
+			updateHUD();	
 		}
 	}
 
 	if (arg.key == OIS::KC_P)
 	{
-		cannonVelX+=20;
+		shotForce+=0.1;
 		updateHUD();
 	}
 
 	if (arg.key == OIS::KC_O)
-	{
-		if (cannonVelX<=80)
+	{		
+		if (shotForce == 1)
 		{
-			cannonVelX = 80;
+			shotForce = 1;
+			updateHUD();			
+		}
+		else if (shotForce >=1.1 )
+		{
+			shotForce -= 0.1;
 			updateHUD();
 		}
-		else if (cannonVelX >= 100)
-		{
-			cannonVelX -=20;
-			updateHUD();
-		}
+
 	}
 
 	if (arg.key == OIS::KC_X)
     {
 
-		physicsManager.shootTheProjectil(myObjects[currentTurn],myObjects[2], btVector3(cannonVelX,cannonVelY,0)); 
+		physicsManager.shootTheProjectil(myObjects[currentTurn],myObjects[2], btVector3(cannonVelX*shotForce,cannonVelY*shotForce,0)); 
 	}
 	if (arg.key == OIS::KC_V)   // faz a fisica correr
     {
