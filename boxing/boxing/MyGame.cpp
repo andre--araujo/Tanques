@@ -193,7 +193,8 @@ void MyGame::configureTerrainDefaults(Ogre::Light* light)
     Ogre::Terrain::ImportData& defaultimp = mTerrainGroup->getDefaultImportSettings();
     defaultimp.terrainSize = 513;
     defaultimp.worldSize = 12000.0f;
-    defaultimp.inputScale = 600;
+    defaultimp.inputScale = 1600;
+	defaultimp.inputBias = 0;
     defaultimp.minBatchSize = 33;
     defaultimp.maxBatchSize = 65;
     // textures
