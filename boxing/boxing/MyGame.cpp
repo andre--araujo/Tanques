@@ -191,7 +191,7 @@ void MyGame::configureTerrainDefaults(Ogre::Light* light)
  
     // Configure default import settings for if we use imported image
     Ogre::Terrain::ImportData& defaultimp = mTerrainGroup->getDefaultImportSettings();
-    defaultimp.terrainSize = 513;
+    defaultimp.terrainSize = 129;
     defaultimp.worldSize = 12000.0f;
     defaultimp.inputScale = 1600;
 	defaultimp.inputBias = 0;
