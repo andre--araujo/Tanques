@@ -41,8 +41,14 @@ public:
     virtual void destroyScene(void);
 
 	void createCamera(void);
+	void freeCamera();
 	void changeCamera();
+	void overCamera();
 	Ogre::Camera* mP1Camera;
+	Ogre::Camera* mP2Camera;
+	Ogre::Camera* m2P1Camera;
+	Ogre::Camera* m2P2Camera;
+	Ogre::Camera* mOverCamera;
 	void updateCameraPosition();
 		
 	void checkCollision();

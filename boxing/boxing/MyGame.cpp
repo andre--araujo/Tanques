@@ -21,7 +21,7 @@ MyGame::~MyGame(void)
 
 void getTerrainImage(bool flipX, bool flipY, Ogre::Image& img)
 {
-  img.load("terrain.png", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+  img.load("ground.png", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
     if (flipX)
         img.flipAroundY();
     if (flipY)
@@ -191,9 +191,10 @@ void MyGame::configureTerrainDefaults(Ogre::Light* light)
  
     // Configure default import settings for if we use imported image
     Ogre::Terrain::ImportData& defaultimp = mTerrainGroup->getDefaultImportSettings();
-    defaultimp.terrainSize = 513;
+    defaultimp.terrainSize = 129;
     defaultimp.worldSize = 12000.0f;
-    defaultimp.inputScale = 600;
+    defaultimp.inputScale = 1600;
+	defaultimp.inputBias = 0;
     defaultimp.minBatchSize = 33;
     defaultimp.maxBatchSize = 65;
     // textures
@@ -245,17 +246,81 @@ void MyGame::createCamera(void)
 
 	mP1Camera = mSceneMgr->createCamera("p1Camera");
 
-	mCamera->setPosition(Ogre::Vector3(100, 600, 100));
-    mCamera->lookAt(Ogre::Vector3(10, 400, 0));
-
 	mP1Camera->setNearClipDistance(0.1);
     mP1Camera->setFarClipDistance(50000);
+
  
     if (mRoot->getRenderSystem()->getCapabilities()->hasCapability(Ogre::RSC_INFINITE_FAR_PLANE))
     {
         mP1Camera->setFarClipDistance(0);   // enable infinite far clip distance if we can
     }
 
+	/////////////////////////////////////////////////////////////////////////
+	////////////// player 2 camera //////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////
+
+
+	mP2Camera = mSceneMgr->createCamera("p2Camera");
+
+	mP2Camera->setNearClipDistance(0.1);
+    mP2Camera->setFarClipDistance(50000);
+ 
+    if (mRoot->getRenderSystem()->getCapabilities()->hasCapability(Ogre::RSC_INFINITE_FAR_PLANE))
+    {
+        mP2Camera->setFarClipDistance(0);   // enable infinite far clip distance if we can
+    }
+
+	/////////////////////////////////////////////////////////////////////////
+	////////////// third-person p1 camera ///////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////
+
+
+	m2P1Camera = mSceneMgr->createCamera("tp1Camera");
+
+	m2P1Camera->setPosition(Ogre::Vector3(100, 300, 100));
+
+	m2P1Camera->setNearClipDistance(0.1);
+    m2P1Camera->setFarClipDistance(50000);
+ 
+    if (mRoot->getRenderSystem()->getCapabilities()->hasCapability(Ogre::RSC_INFINITE_FAR_PLANE))
+    {
+        m2P1Camera->setFarClipDistance(0);   // enable infinite far clip distance if we can
+    }
+
+	/////////////////////////////////////////////////////////////////////////
+	////////////// third-person p2 camera ///////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////
+
+
+	m2P2Camera = mSceneMgr->createCamera("tp2Camera");
+
+	m2P2Camera->setPosition(Ogre::Vector3(100, 300, 100));
+
+	m2P2Camera->setNearClipDistance(0.1);
+    m2P2Camera->setFarClipDistance(50000);
+ 
+    if (mRoot->getRenderSystem()->getCapabilities()->hasCapability(Ogre::RSC_INFINITE_FAR_PLANE))
+    {
+        m2P2Camera->setFarClipDistance(0);   // enable infinite far clip distance if we can
+    }
+
+	/////////////////////////////////////////////////////////////////////////
+	////////////// over world camera ///////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////
+
+
+	mOverCamera = mSceneMgr->createCamera("overCamera");
+
+	mOverCamera->setPosition(Ogre::Vector3(1000, 1600, 1000));
+    mOverCamera->lookAt(Ogre::Vector3(0,0, 0));
+
+	mOverCamera->setNearClipDistance(0.1);
+    mOverCamera->setFarClipDistance(50000);
+ 
+    if (mRoot->getRenderSystem()->getCapabilities()->hasCapability(Ogre::RSC_INFINITE_FAR_PLANE))
+    {
+		mOverCamera->setFarClipDistance(0);
+    }
 
 }
 void MyGame::updateCameraPosition(){
@@ -266,11 +331,25 @@ void MyGame::updateCameraPosition(){
 	btVector3 aux = btVector3(100,0,0)* boxRot;
 	
 	Ogre::Vector3 camPos = objPos + Ogre::Vector3(30,50,0);
+	Ogre::Vector3 cam2Pos = objPos + Ogre::Vector3(80,100,50);
 	//tank olhando sempre pra frente
 	Ogre::Vector3 camTargetPos = objPos + Ogre::Vector3(aux.getX(),aux.getY(),aux.getZ());
 
-	mP1Camera->setPosition(camPos);
-	mP1Camera->lookAt(camTargetPos);
+	if (currentTurn == 0){
+		mP1Camera->setPosition(camPos);
+		mP1Camera->lookAt(camTargetPos);
+		//m2P1Camera->setPosition(cam2Pos);
+		m2P1Camera->lookAt(objPos);
+	}
+
+	else if (currentTurn == 1){
+		mP2Camera->setPosition(camPos);
+		mP2Camera->lookAt(camTargetPos);
+		//m2P2Camera->setPosition(cam2Pos);
+		m2P2Camera->lookAt(objPos);
+	}
+
+	mOverCamera->setPosition(Ogre::Vector3(1000, 1600, 1000));
 }
 
 
@@ -332,18 +411,14 @@ void MyGame::checkCollision(){
 }
 
 
-
-void MyGame::changeCamera(){
+void MyGame::freeCamera(){
 	
 	try{
-	if(mCameraMan->getCamera() != mP1Camera){
-		mCameraMan->setCamera(mP1Camera);
-		mWindow->getViewport(0)->setCamera(mP1Camera);
-	}else{
-		mCameraMan->setCamera(mCamera);
-		mWindow->getViewport(0)->setCamera(mCamera);
+		if(mCameraMan->getCamera() != mCamera){
+			mCameraMan->setCamera(mCamera);
+			mWindow->getViewport(0)->setCamera(mCamera);
+		}	
 	
-	}
 
 	}catch(Ogre::Exception e){
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
@@ -358,12 +433,80 @@ void MyGame::changeCamera(){
 	//	MessageBox( NULL, , "An exception has occured!", MB_OK | MB_ICONERROR | MB_TASKMODAL);
 }
 
+
+void MyGame::changeCamera(){
+	
+	try{
+
+	if(currentTurn == 0){
+		if(mCameraMan->getCamera() != mP1Camera){
+			mCameraMan->setCamera(mP1Camera);
+			mWindow->getViewport(0)->setCamera(mP1Camera);
+		}
+		else{
+			mCameraMan->setCamera(m2P1Camera);
+			mWindow->getViewport(0)->setCamera(m2P1Camera);
+		}	
+	}
+
+	else{
+		if(mCameraMan->getCamera() != mP2Camera){
+			mCameraMan->setCamera(mP2Camera);
+			mWindow->getViewport(0)->setCamera(mP2Camera);
+		}
+		else{
+			mCameraMan->setCamera(m2P2Camera);
+			mWindow->getViewport(0)->setCamera(m2P2Camera);
+		}	
+	}
+	
+
+	}catch(Ogre::Exception e){
+#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
+    MessageBox( NULL, e.getFullDescription().c_str(), "An exception has occured!", MB_OK | MB_ICONERROR | MB_TASKMODAL);
+#else
+    std::cerr << "An exception has occured: " <<
+            e.getFullDescription().c_str() << std::endl;
+#endif
+	}
+
+	//if (mCameraMan->getCamera()->getPosition().x == (mSceneMgr->getSceneNode("node_box")->getPosition().x-30))
+	//	MessageBox( NULL, , "An exception has occured!", MB_OK | MB_ICONERROR | MB_TASKMODAL);
+}
+
+void MyGame::overCamera(){
+	
+	try{
+		if(mCameraMan->getCamera() != mOverCamera){
+			mCameraMan->setCamera(mOverCamera);
+			mWindow->getViewport(0)->setCamera(mOverCamera);
+		}	
+	
+
+	}catch(Ogre::Exception e){
+#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
+    MessageBox( NULL, e.getFullDescription().c_str(), "An exception has occured!", MB_OK | MB_ICONERROR | MB_TASKMODAL);
+#else
+    std::cerr << "An exception has occured: " <<
+            e.getFullDescription().c_str() << std::endl;
+#endif
+	}
+
+	//if (mCameraMan->getCamera()->getPosition().x == (mSceneMgr->getSceneNode("node_box")->getPosition().x-30))
+	//	MessageBox( NULL, , "An exception has occured!", MB_OK | MB_ICONERROR | MB_TASKMODAL);
+}
+
+
 void MyGame::createViewports(void)
 {
 	Ogre::Viewport* vp = mWindow->addViewport(mCamera);
 	vp->setBackgroundColour(Ogre::ColourValue(0,0,0)); // cor de fundo = preto
 	mCamera->setAspectRatio(Ogre::Real(vp->getActualWidth()) / Ogre::Real(vp->getActualHeight())); // ajusta o aspect ratio
 	mP1Camera->setAspectRatio(Ogre::Real(vp->getActualWidth()) / Ogre::Real(vp->getActualHeight()));
+	mP2Camera->setAspectRatio(Ogre::Real(vp->getActualWidth()) / Ogre::Real(vp->getActualHeight()));
+	m2P1Camera->setAspectRatio(Ogre::Real(vp->getActualWidth()) / Ogre::Real(vp->getActualHeight()));
+	m2P2Camera->setAspectRatio(Ogre::Real(vp->getActualWidth()) / Ogre::Real(vp->getActualHeight()));
+	mOverCamera->setAspectRatio(Ogre::Real(vp->getActualWidth()) / Ogre::Real(vp->getActualHeight()));
 
 }
 
@@ -515,11 +658,15 @@ bool MyGame::keyPressed( const OIS::KeyEvent &arg )
 
 	if (arg.key == OIS::KC_H)
 	{
-			passTheTurn();	
+			
+			passTheTurn();
+			changeCamera();
 			updateHUD();
 	}
 
-	if (arg.key == OIS::KC_Q)changeCamera();
+	if (arg.key == OIS::KC_1)freeCamera();
+	if (arg.key == OIS::KC_2)changeCamera();
+	if (arg.key == OIS::KC_3)overCamera();
 
 	if (arg.key == OIS::KC_U)
 	{
