@@ -35,9 +35,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Historico de Alteracoes.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="MyGame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -50,5 +47,8 @@
     <ClInclude Include="gameObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Controles.txt" />
   </ItemGroup>
 </Project>

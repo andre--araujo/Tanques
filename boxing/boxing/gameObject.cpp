@@ -124,13 +124,15 @@ void GameObject::initGraphicsBox(	Ogre::String entityName,
 								float x, float y, float z
 								)
 {
-	//Ogre::Entity *sphere = mSceneMgr->createEntity("sphere", "sphere.mesh");//Sinbad
+	// Tanque em si
 	sceneEntity = sceneManager->createEntity(entityName, mesh);//createEntity(entityName, "sinbad.mesh");//criando entidade no gerenciador de cena
 	sceneNode = sceneManager->createSceneNode(nodeName); //criando node no gerenciador de cena
 	parentNode->addChild(sceneNode); // adiciona o nó na arvore de cena como filho de parent node
 	sceneNode->attachObject(sceneEntity); // associa nó à entidade
 	sceneNode->setPosition(relativePosition); // define a posicao do nó em relação a seu parentNode
 	sceneNode->scale(x/100, y/100, z/100);
+	
+	// canhao do tanque
 	
 }
 

@@ -64,8 +64,9 @@ public:
 	private:
     bool processUnbufferedInput(const Ogre::FrameEvent& evt);
 	int currentTurn; //	0 = tank1   1 = tank2
-	int cannonVelX;
+	int cannonVelX; // usado pra forjar um angulo de disparo, quando aumenta o X dimunui Y e versa vice
 	int cannonVelY;
+	float shotForce; // a forca do tiro, maior = mais forte
 
 };
 

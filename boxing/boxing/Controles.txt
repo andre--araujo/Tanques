@@ -1,0 +1,16 @@
+	I
+J   K	L     movimentacao
+
+U levanta o canhao 
+
+Y abaixa o canhao 
+
+P aumenta forca do tiro (vel eixo x)
+
+O diminui forca do tiro (vel eixo x)
+
+X atirar
+
+H passar o turno
+
+Q camera

@@ -154,17 +154,21 @@ bool MyGame::frameRenderingQueued(const Ogre::FrameEvent& evt)
         {
 			updateHUD();
            // mInfoLabel->setCaption("Fazendo o terreno, sossega ai...");
+			mTrayMgr->destroyAllWidgetsInTray(OgreBites::TL_BOTTOMLEFT); //desliga aquele monte de coisa na tela
+			mTrayMgr->destroyAllWidgetsInTray(OgreBites::TL_BOTTOMRIGHT);
         }
         else
         {
 			updateHUD();
-            //mInfoLabel->setCaption("Atualizando as texturas, sossega ai...");			
+            //mInfoLabel->setCaption("Atualizando as texturas, sossega ai...");	
+			mTrayMgr->destroyAllWidgetsInTray(OgreBites::TL_BOTTOMLEFT); //desliga aquele monte de coisa na tela
+			mTrayMgr->destroyAllWidgetsInTray(OgreBites::TL_BOTTOMRIGHT);
         }
     }
     else
     {
-       //mTrayMgr->removeWidgetFromTray(mInfoLabel);
-       // mInfoLabel->hide();
+        mTrayMgr->destroyAllWidgetsInTray(OgreBites::TL_BOTTOMLEFT); //desliga aquele monte de coisa na tela
+		mTrayMgr->destroyAllWidgetsInTray(OgreBites::TL_BOTTOMRIGHT);
         if (mTerrainsImported)
         {
             mTerrainGroup->saveAllTerrains(true);
@@ -214,7 +218,7 @@ void MyGame::createFrameListener(void)
 {
     BaseApplication::createFrameListener();
  
-    mInfoLabel = mTrayMgr->createLabel(OgreBites::TL_TOP, "TInfo", "", 350);
+    mInfoLabel = mTrayMgr->createLabel(OgreBites::TL_TOP, "TInfo", "", 700);
 }
 
 void MyGame::destroyScene(void)
@@ -358,13 +362,14 @@ void MyGame::updateHUD() // gera a strng q aparece naquela telinha de cima
 		string turn;
 		if (currentTurn == 0) { turn = "Turno: P1";}
 		else if (currentTurn == 1) { turn = "Turno: P2";}
-		string hp1 = "P1 hp: ";
-		string hp2 = "P2 hp: ";
-		string velx = "canhao X: " + to_string((_ULonglong)cannonVelX);
-		string vely = "canhao Y: " + to_string((_ULonglong)cannonVelY);
+		
+		std::ostringstream ss;
 
+		ss << turn << "  " << "P1 hp: " << "P2 hp: " << "  " << "canhao X: " << cannonVelX <<  "  "
+			<< "canhao Y: " << cannonVelY << "  "<< "forca: " << shotForce  ;
 
-		mInfoLabel->setCaption(turn+ "  "+ hp1 + "  "+ hp2 + "  "+ velx + "  "+ vely);
+		std::string ret(ss.str());
+		mInfoLabel->setCaption(ret);
 		
 }
 
@@ -616,7 +621,7 @@ void MyGame::createScene(void)
 										mSceneMgr,
 										physicsManager.mWorld, 
 										new btVector3(-200,450,300),
-										10);
+										5);
 	myObjects.push_back(proj);
 
 	tank1->tag="TANK";
@@ -627,9 +632,7 @@ void MyGame::createScene(void)
 	currentTurn = 0;	 // turno inicial
 	cannonVelX = 100; // velocidade de disparos iniciais
 	cannonVelY = 100;
-
-	 //mTrayMgr->moveWidgetToTray(mInfoLabel, OgreBites::TL_TOP, 0);
-     //mInfoLabel->show();
+	shotForce = 1;
 }
 void MyGame::passTheTurn()
 {
@@ -657,140 +660,89 @@ bool MyGame::keyPressed( const OIS::KeyEvent &arg )
 
     if (mTrayMgr->isDialogVisible()) return true;   // don't process any more keys if dialog is up
 
-	if (arg.key == OIS::KC_H)
+	if (arg.key == OIS::KC_H) //botao troca de turno
 	{
 			
-			passTheTurn();
-			changeCamera();
+			passTheTurn();		
 			updateHUD();
 	}
 
+	//cameras
 	if (arg.key == OIS::KC_1)freeCamera();
 	if (arg.key == OIS::KC_2)changeCamera();
 	if (arg.key == OIS::KC_3)overCamera();
 
-	if (arg.key == OIS::KC_U)
+	if (arg.key == OIS::KC_U) //aumentar inclinacao do canhao
 	{
-		cannonVelY+=20;
+		if (cannonVelX >= 20)
+		{
+		cannonVelY+=10;
+		cannonVelX-=10;
+		updateHUD();
+		}
+	}
+
+	if (arg.key == OIS::KC_Y)  //diminuir inclinacao do canhao
+	{		
+		if (cannonVelY >= 20)
+		{
+			cannonVelY -=10;
+			cannonVelX +=10;
+			updateHUD();	
+		}
+	}
+
+	if (arg.key == OIS::KC_P) // aumentar forca de disparo
+	{
+		shotForce+=0.1;
 		updateHUD();
 	}
 
-	if (arg.key == OIS::KC_Y)
-	{
-		if (cannonVelY<=80)
+	if (arg.key == OIS::KC_O) // diminuir forca de disparo
+	{		
+		if (shotForce == 1)
 		{
-			cannonVelY = 80;
+			shotForce = 1;
+			updateHUD();			
+		}
+		else if (shotForce >=1.1 )
+		{
+			shotForce -= 0.1;
 			updateHUD();
 		}
-		else if (cannonVelY >= 100)
-		{
-			cannonVelY -=20;
-			updateHUD();
-		}
+
 	}
 
-	if (arg.key == OIS::KC_P)
-	{
-		cannonVelX+=20;
-		updateHUD();
-	}
-
-	if (arg.key == OIS::KC_O)
-	{
-		if (cannonVelX<=80)
-		{
-			cannonVelX = 80;
-			updateHUD();
-		}
-		else if (cannonVelX >= 100)
-		{
-			cannonVelX -=20;
-			updateHUD();
-		}
-	}
-
-	if (arg.key == OIS::KC_X)
+	if (arg.key == OIS::KC_X) // atirar
     {
 
-		physicsManager.shootTheProjectil(myObjects[currentTurn],myObjects[2], btVector3(cannonVelX,cannonVelY,0)); 
+		physicsManager.shootTheProjectil(myObjects[currentTurn],myObjects[2], btVector3(cannonVelX*shotForce,cannonVelY*shotForce,0)); 
 	}
 	if (arg.key == OIS::KC_V)   // faz a fisica correr
     {
-		flag=!flag;
+		flag=!flag;			
+		
+		
     }
-    if (arg.key == OIS::KC_F)   // toggle visibility of advanced frame stats
-    {
-        mTrayMgr->toggleAdvancedFrameStats();
-    }
-    else if (arg.key == OIS::KC_G)   // toggle visibility of even rarer debugging details
-    {
-        if (mDetailsPanel->getTrayLocation() == OgreBites::TL_NONE)
-        {
-            mTrayMgr->moveWidgetToTray(mDetailsPanel, OgreBites::TL_TOPRIGHT, 0);
-            mDetailsPanel->show();
-        }
-        else
-        {
-            mTrayMgr->removeWidgetFromTray(mDetailsPanel);
-            mDetailsPanel->hide();
-        }
-    }
-    else if (arg.key == OIS::KC_T)   // cycle polygon rendering mode
-    {
-        Ogre::String newVal;
-        Ogre::TextureFilterOptions tfo;
-        unsigned int aniso;
+    //if (arg.key == OIS::KC_F)   // toggle visibility of advanced frame stats FPS
+    //{
+    //    mTrayMgr->toggleAdvancedFrameStats();
+    //}
 
-        switch (mDetailsPanel->getParamValue(9).asUTF8()[0])
-        {
-        case 'B':
-            newVal = "Trilinear";
-            tfo = Ogre::TFO_TRILINEAR;
-            aniso = 1;
-            break;
-        case 'T':
-            newVal = "Anisotropic";
-            tfo = Ogre::TFO_ANISOTROPIC;
-            aniso = 8;
-            break;
-        case 'A':
-            newVal = "None";
-            tfo = Ogre::TFO_NONE;
-            aniso = 1;
-            break;
-        default:
-            newVal = "Bilinear";
-            tfo = Ogre::TFO_BILINEAR;
-            aniso = 1;
-        }
-
-        Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(tfo);
-        Ogre::MaterialManager::getSingleton().setDefaultAnisotropy(aniso);
-        mDetailsPanel->setParamValue(9, newVal);
-    }
-    else if (arg.key == OIS::KC_R)   // cycle polygon rendering mode
-    {
-        Ogre::String newVal;
-        Ogre::PolygonMode pm;
-
-        switch (mCamera->getPolygonMode())
-        {
-        case Ogre::PM_SOLID:
-            newVal = "Wireframe";
-            pm = Ogre::PM_WIREFRAME;
-            break;
-        case Ogre::PM_WIREFRAME:
-            newVal = "Points";
-            pm = Ogre::PM_POINTS;
-            break;
-        default:
-            newVal = "Solid";
-            pm = Ogre::PM_SOLID;
-        }
-
-        mCamera->setPolygonMode(pm);
-        mDetailsPanel->setParamValue(10, newVal);
-    }
+    //else if (arg.key == OIS::KC_G)   // toggle visibility of even rarer debugging details
+    //{
+    //    if (mDetailsPanel->getTrayLocation() == OgreBites::TL_NONE)
+    //    {
+    //        mTrayMgr->moveWidgetToTray(mDetailsPanel, OgreBites::TL_TOPRIGHT, 0);
+    //        mDetailsPanel->show();
+    //    }
+    //    else
+    //    {
+    //        mTrayMgr->removeWidgetFromTray(mDetailsPanel);
+    //        mDetailsPanel->hide();
+    //    }
+    //}
+   
     else if(arg.key == OIS::KC_F5)   // refresh all textures
     {
         Ogre::TextureManager::getSingleton().reloadAll();

@@ -104,7 +104,7 @@
     <ClCompile Include="Tank.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Historico de Alteracoes.txt" />
+    <None Include="Controles.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BaseApplication.h" />

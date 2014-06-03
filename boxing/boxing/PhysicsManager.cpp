@@ -50,8 +50,10 @@ void PhysicsManager::shootTheProjectil(GameObject*& obj, GameObject*& projectil,
 	obj->rigidBody->getMotionState()->getWorldTransform(trans);
     trans.setOrigin(btVector3(btScalar(trans.getOrigin().getX()), btScalar(trans.getOrigin().getY() + 60), btScalar(trans.getOrigin().getZ())));
 
+	//projectil->rigidBody->clearForces(); //add
 	projectil->rigidBody->setWorldTransform(trans);
-	projectil->rigidBody->setLinearVelocity(correctedForce);
+	projectil->rigidBody->setLinearVelocity(correctedForce); 
+	
 }
 
 void PhysicsManager::move(GameObject*& obj, btVector3& velocity)
