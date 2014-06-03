@@ -40,6 +40,11 @@ class GameObject
 	GameObject(	Ogre::String entityName, char* mesh, Ogre::String nodeName, Ogre::SceneNode* parentNode, 
 				Ogre::Vector3 relativePosition, btScalar mass, 
 				Ogre::SceneManager * sceneMgr, btDynamicsWorld * dWld, btVector3 * iPos, float x, float y, float z);
+
+	//pro tanque
+	GameObject(	int a, Ogre::String entityName, char* mesh, Ogre::String nodeName, Ogre::SceneNode* parentNode, 
+				Ogre::Vector3 relativePosition, btScalar mass, 
+				Ogre::SceneManager * sceneMgr, btDynamicsWorld * dWld, btVector3 * iPos, float x, float y, float z);
 	
 	void initGraphics(	Ogre::String entityName, 
 								char* mesh,
@@ -60,6 +65,16 @@ class GameObject
 								float x, float y, float z
 								);
 	void initPhysicsBox(btScalar mass, btVector3 * iPos, float x, float y, float z);
+	
+	//tanque
+	void initGraphicsTank(	Ogre::String entityName, 
+								char* mesh,
+								Ogre::String nodeName, 
+								Ogre::SceneNode* parentNode, 
+								Ogre::Vector3 relativePosition,
+								float x, float y, float z
+								);
+	void initPhysicsTank(btScalar mass, btVector3 * iPos, float x, float y, float z);
 
 };
 

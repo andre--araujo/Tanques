@@ -52,7 +52,32 @@ GameObject::GameObject(	Ogre::String entityName,  //construtor para boxes
 	initPhysicsBox(mass,iPos,x, y, z);
 	tag="";
 }
+//tanque
+GameObject::GameObject(	int i, Ogre::String entityName,  //construtor para boxes
+						char * mesh, 
+						Ogre::String nodeName, 
+						Ogre::SceneNode* parentNode, 
+						Ogre::Vector3 relativePosition,//posicao do no da mesh
+						btScalar mass, 
+						Ogre::SceneManager * sceneMgr,
+						btDynamicsWorld * dWld,
+						btVector3 * iPos,
+						float x, float y, float z) //posicao da figura fisica
 
+{
+	sceneManager = sceneMgr;
+	dWorld = dWld;
+	initGraphicsTank(	entityName, 
+					mesh, 
+					nodeName, 
+					parentNode, 
+					relativePosition,
+					x, y, z
+					);
+	
+	initPhysicsTank(mass,iPos,x, y, z);
+	tag="";
+}
 
 void GameObject::initGraphics(	Ogre::String entityName, 
 								char* mesh,
@@ -109,7 +134,7 @@ void GameObject::initPhysicsBox(btScalar mass, btVector3 * iPos, float x, float 
 	btRigidBody::btRigidBodyConstructionInfo rigidBodyCI(mass,motionState,collisionShape,bodyInertia);
 	rigidBody = new btRigidBody(rigidBodyCI);
 	rigidBody->setSleepingThresholds(0,0);
-	rigidBody->setFriction(2); //rever isso aqui
+	rigidBody->setFriction(1); //rever isso aqui
 	dWorld->addRigidBody(rigidBody);
 	rigidBody->setUserPointer(this);
 
@@ -132,12 +157,46 @@ void GameObject::initGraphicsBox(	Ogre::String entityName,
 	sceneNode->setPosition(relativePosition); // define a posicao do nó em relação a seu parentNode
 	sceneNode->scale(x/100, y/100, z/100);
 	
-	// canhao do tanque
 	
 }
 
+//tanque
+void GameObject::initPhysicsTank(btScalar mass, btVector3 * iPos, float x, float y, float z)
+{
+    collisionShape = new btBoxShape(btVector3(x / 2, y / 2, z / 2));   
+	motionState = new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1),*iPos));
+    bodyMass = mass;
+	btVector3 bodyInertia = btVector3(0,0,0);
+	collisionShape->calculateLocalInertia(mass,bodyInertia);
+	btRigidBody::btRigidBodyConstructionInfo rigidBodyCI(mass,motionState,collisionShape,bodyInertia);
+	rigidBody = new btRigidBody(rigidBodyCI);
+	rigidBody->setSleepingThresholds(0,0);
+	rigidBody->setFriction(1); //rever isso aqui
+	dWorld->addRigidBody(rigidBody);
+	rigidBody->setUserPointer(this);
+
+}
 
 
+void GameObject::initGraphicsTank(	Ogre::String entityName, 
+								char* mesh,
+								Ogre::String nodeName, 
+								Ogre::SceneNode* parentNode, 
+								Ogre::Vector3 relativePosition,
+								float x, float y, float z
+								)
+{
+	// Tanque em si
+	sceneEntity = sceneManager->createEntity(entityName, mesh);//createEntity(entityName, "sinbad.mesh");//criando entidade no gerenciador de cena
+	sceneNode = sceneManager->createSceneNode(nodeName); //criando node no gerenciador de cena
+	parentNode->addChild(sceneNode); // adiciona o nó na arvore de cena como filho de parent node
+	sceneNode->attachObject(sceneEntity); // associa nó à entidade
+	sceneNode->setPosition(relativePosition); // define a posicao do nó em relação a seu parentNode
+	sceneNode->scale(x/4.4, y/1.2, z/3);
+	
+	// canhao do tanque
+	
+}
 GameObject::~GameObject(void)
 {
 

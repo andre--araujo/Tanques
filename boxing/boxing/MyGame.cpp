@@ -605,9 +605,9 @@ void MyGame::createScene(void)
 	myObjects.push_back(tank1);
 
 
-	GameObject * tank2 = new GameObject("tank2","cube.mesh","node_tank2",mSceneMgr->getRootSceneNode(),Ogre::Vector3(-70,300,20),
+	GameObject * tank2 = new GameObject(1, "tank2","tanque.mesh","node_tank2",mSceneMgr->getRootSceneNode(),Ogre::Vector3(-70,300,20),
 										40,mSceneMgr,physicsManager.mWorld, new btVector3(-70,300,20),40,10,30);
-
+	
 	//GameObject * tank2 = new GameObject("tank2","cube.mesh","node_tank2",mSceneMgr->getRootSceneNode(),Ogre::Vector3(-13,550,13),
 	//									40,mSceneMgr,physicsManager.mWorld, new btVector3(-13,550,13),20,15,60);
 
