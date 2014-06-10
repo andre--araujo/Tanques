@@ -57,6 +57,8 @@ public:
 	void passTheTurn();
 	GameObject* getObjectofTurn(); //retorna um ponteiro para o objeto (tanque) que esta em seu turno
 
+	void runAI();
+
 	PhysicsManager physicsManager;
     virtual bool frameRenderingQueued(const Ogre::FrameEvent& evt);
 	std::vector<GameObject *> myObjects;
@@ -67,6 +69,8 @@ public:
 	int cannonVelX; // usado pra forjar um angulo de disparo, quando aumenta o X dimunui Y e versa vice
 	int cannonVelY;
 	float shotForce; // a forca do tiro, maior = mais forte
+
+	string stateAI;
 
 };
 

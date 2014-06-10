@@ -531,7 +531,7 @@ void MyGame::createScene(void)
  
     mSceneMgr->setAmbientLight(Ogre::ColourValue(0.2, 0.2, 0.2));
 	mTerrainGlobals = OGRE_NEW Ogre::TerrainGlobalOptions();
-	mTerrainGroup = OGRE_NEW Ogre::TerrainGroup(mSceneMgr, Ogre::Terrain::ALIGN_X_Z, 129, 3000.0f);
+	mTerrainGroup = OGRE_NEW Ogre::TerrainGroup(mSceneMgr, Ogre::Terrain::ALIGN_X_Z, 129, 1500.0f);
     mTerrainGroup->setFilenameConvention(Ogre::String("BasicTutorial3Terrain"), Ogre::String("dat"));
     mTerrainGroup->setOrigin(Ogre::Vector3::ZERO);
 
@@ -600,17 +600,17 @@ void MyGame::createScene(void)
 
 
 
-	GameObject * tank1 = new GameObject("tank1","cube.mesh","node_tank1",mSceneMgr->getRootSceneNode(),Ogre::Vector3(-10,300,1),
-										10,mSceneMgr,physicsManager.mWorld, new btVector3(-10,300,1),40,10,30);
+	GameObject * tank1 = new GameObject("tank1","cube.mesh","node_tank1",mSceneMgr->getRootSceneNode(),Ogre::Vector3(310,420,220),
+										10,mSceneMgr,physicsManager.mWorld, new btVector3(310,420,220),40,10,30);
 	tank1->turn = 1;
 	myObjects.push_back(tank1);
 
 
-	//GameObject * tank2 = new GameObject(1, "tank2","tanque.mesh","node_tank2",mSceneMgr->getRootSceneNode(),Ogre::Vector3(-70,300,20),
-	//									40,mSceneMgr,physicsManager.mWorld, new btVector3(-70,300,20),40,10,30);
+	GameObject * tank2 = new GameObject(1, "tank2","tanque.mesh","node_tank2",mSceneMgr->getRootSceneNode(),Ogre::Vector3(-470,420,-220),
+										40,mSceneMgr,physicsManager.mWorld, new btVector3(-470,430,-220),40,10,30);
 	
-	GameObject * tank2 = new GameObject("tank2","cube.mesh","node_tank2",mSceneMgr->getRootSceneNode(),Ogre::Vector3(-13,550,13),
-										40,mSceneMgr,physicsManager.mWorld, new btVector3(-13,550,13),20,15,60);
+	//GameObject * tank2 = new GameObject("tank2","cube.mesh","node_tank2",mSceneMgr->getRootSceneNode(),Ogre::Vector3(-13,550,13),
+	//									40,mSceneMgr,physicsManager.mWorld, new btVector3(-13,550,13),20,15,60);
 
 	myObjects.push_back(tank2);
 	GameObject * proj = new GameObject( "proj",
@@ -634,7 +634,34 @@ void MyGame::createScene(void)
 	cannonVelX = 100; // velocidade de disparos iniciais
 	cannonVelY = 100;
 	shotForce = 1;
+
+	stateAI = "Fire";
 }
+
+void MyGame::runAI()
+{
+	if(currentTurn == 1)
+	{
+		if (stateAI == "Fire")
+		{
+		//inserir código que mira no jogador
+			physicsManager.shootTheProjectil(myObjects[currentTurn],myObjects[2], btVector3(cannonVelX*shotForce,cannonVelY*shotForce,0)); 
+			passTheTurn();
+		}
+
+		// Já que a função checkcollision verifica quando o projétil acertou um tanque, basta setar o stateAI nesse caso para "Hit"
+
+		else // if(stateAI == "Hit")
+		{
+		//inserir código que move o tanque numa direção aleatória
+				stateAI = "Fire";
+		//inserir código que mira no jogador
+			physicsManager.shootTheProjectil(myObjects[currentTurn],myObjects[2], btVector3(cannonVelX*shotForce,cannonVelY*shotForce,0));
+			passTheTurn();
+		}
+	}
+}
+
 void MyGame::passTheTurn()
 {
 	if (currentTurn == 0)
@@ -663,7 +690,7 @@ bool MyGame::keyPressed( const OIS::KeyEvent &arg )
 
 	if (arg.key == OIS::KC_H) //botao troca de turno
 	{
-			
+			overCamera();
 			passTheTurn();		
 			updateHUD();
 	}
