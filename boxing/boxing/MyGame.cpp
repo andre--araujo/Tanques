@@ -519,7 +519,8 @@ void MyGame::createScene(void)
 	//tutorial 3
 	mSceneMgr->setSkyDome(true, "Examples/CloudySky", 5, 8); // um coubo em volta da camera com textura
 
-	Ogre::Vector3 lightdir(0.55, -0.3, 0.75);
+	//Ogre::Vector3 lightdir(0.55, -0.3, 0.75);
+	Ogre::Vector3 lightdir(0.05, -0.1, 0.05);
     lightdir.normalise();
  
     Ogre::Light* light = mSceneMgr->createLight("tstLight");
@@ -530,7 +531,7 @@ void MyGame::createScene(void)
  
     mSceneMgr->setAmbientLight(Ogre::ColourValue(0.2, 0.2, 0.2));
 	mTerrainGlobals = OGRE_NEW Ogre::TerrainGlobalOptions();
-	mTerrainGroup = OGRE_NEW Ogre::TerrainGroup(mSceneMgr, Ogre::Terrain::ALIGN_X_Z, 513, 12000.0f);
+	mTerrainGroup = OGRE_NEW Ogre::TerrainGroup(mSceneMgr, Ogre::Terrain::ALIGN_X_Z, 129, 3000.0f);
     mTerrainGroup->setFilenameConvention(Ogre::String("BasicTutorial3Terrain"), Ogre::String("dat"));
     mTerrainGroup->setOrigin(Ogre::Vector3::ZERO);
 
@@ -605,11 +606,11 @@ void MyGame::createScene(void)
 	myObjects.push_back(tank1);
 
 
-	GameObject * tank2 = new GameObject(1, "tank2","tanque.mesh","node_tank2",mSceneMgr->getRootSceneNode(),Ogre::Vector3(-70,300,20),
-										40,mSceneMgr,physicsManager.mWorld, new btVector3(-70,300,20),40,10,30);
+	//GameObject * tank2 = new GameObject(1, "tank2","tanque.mesh","node_tank2",mSceneMgr->getRootSceneNode(),Ogre::Vector3(-70,300,20),
+	//									40,mSceneMgr,physicsManager.mWorld, new btVector3(-70,300,20),40,10,30);
 	
-	//GameObject * tank2 = new GameObject("tank2","cube.mesh","node_tank2",mSceneMgr->getRootSceneNode(),Ogre::Vector3(-13,550,13),
-	//									40,mSceneMgr,physicsManager.mWorld, new btVector3(-13,550,13),20,15,60);
+	GameObject * tank2 = new GameObject("tank2","cube.mesh","node_tank2",mSceneMgr->getRootSceneNode(),Ogre::Vector3(-13,550,13),
+										40,mSceneMgr,physicsManager.mWorld, new btVector3(-13,550,13),20,15,60);
 
 	myObjects.push_back(tank2);
 	GameObject * proj = new GameObject( "proj",
