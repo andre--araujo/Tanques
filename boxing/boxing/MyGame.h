@@ -10,6 +10,8 @@
 #include "PhysicsManager.h"
 #include "gameObject.h"
 
+#include "SoundManager.h"
+
 #pragma once
 
 using namespace std;
@@ -59,7 +61,12 @@ public:
 
 	void runAI();
 
+	void setupSound();
+
 	PhysicsManager physicsManager;
+
+	SoundManager * soundMgr;
+
     virtual bool frameRenderingQueued(const Ogre::FrameEvent& evt);
 	std::vector<GameObject *> myObjects;
 

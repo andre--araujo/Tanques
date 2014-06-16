@@ -281,7 +281,7 @@ void MyGame::createCamera(void)
 
 	m2P1Camera = mSceneMgr->createCamera("tp1Camera");
 
-	m2P1Camera->setPosition(Ogre::Vector3(100, 300, 100));
+	//m2P1Camera->setPosition(Ogre::Vector3(100, 300, 100));
 
 	m2P1Camera->setNearClipDistance(0.1);
     m2P1Camera->setFarClipDistance(50000);
@@ -298,7 +298,7 @@ void MyGame::createCamera(void)
 
 	m2P2Camera = mSceneMgr->createCamera("tp2Camera");
 
-	m2P2Camera->setPosition(Ogre::Vector3(100, 300, 100));
+	//m2P2Camera->setPosition(Ogre::Vector3(100, 300, 100));
 
 	m2P2Camera->setNearClipDistance(0.1);
     m2P2Camera->setFarClipDistance(50000);
@@ -334,22 +334,22 @@ void MyGame::updateCameraPosition(){
 	btMatrix3x3& boxRot = myObjects[currentTurn]->rigidBody->getWorldTransform().getBasis();
 	btVector3 aux = btVector3(100,0,0)* boxRot;
 	
-	Ogre::Vector3 camPos = objPos + Ogre::Vector3(30,50,0);
-	Ogre::Vector3 cam2Pos = objPos + Ogre::Vector3(80,100,50);
+	Ogre::Vector3 camPos = objPos + Ogre::Vector3(-30,50,0);
+	Ogre::Vector3 cam2Pos = objPos + Ogre::Vector3(-aux.getX(),20,aux.getZ());
 	//tank olhando sempre pra frente
-	Ogre::Vector3 camTargetPos = objPos + Ogre::Vector3(aux.getX(),aux.getY(),aux.getZ());
+	Ogre::Vector3 camTargetPos = objPos + Ogre::Vector3(aux.getX(),aux.getY(),-aux.getZ());
 
 	if (currentTurn == 0){
 		mP1Camera->setPosition(camPos);
 		mP1Camera->lookAt(camTargetPos);
-		//m2P1Camera->setPosition(cam2Pos);
+		m2P1Camera->setPosition(cam2Pos);
 		m2P1Camera->lookAt(objPos);
 	}
 
 	else if (currentTurn == 1){
 		mP2Camera->setPosition(camPos);
 		mP2Camera->lookAt(camTargetPos);
-		//m2P2Camera->setPosition(cam2Pos);
+		m2P2Camera->setPosition(cam2Pos);
 		m2P2Camera->lookAt(objPos);
 	}
 
@@ -443,25 +443,19 @@ void MyGame::changeCamera(){
 	try{
 
 	if(currentTurn == 0){
-		if(mCameraMan->getCamera() != mP1Camera){
-			mCameraMan->setCamera(mP1Camera);
-			mWindow->getViewport(0)->setCamera(mP1Camera);
-		}
-		else{
+		if(mCameraMan->getCamera() != m2P1Camera){
 			mCameraMan->setCamera(m2P1Camera);
 			mWindow->getViewport(0)->setCamera(m2P1Camera);
-		}	
+		}
+
 	}
 
 	else{
-		if(mCameraMan->getCamera() != mP2Camera){
-			mCameraMan->setCamera(mP2Camera);
-			mWindow->getViewport(0)->setCamera(mP2Camera);
-		}
-		else{
+		if(mCameraMan->getCamera() != m2P2Camera){
 			mCameraMan->setCamera(m2P2Camera);
 			mWindow->getViewport(0)->setCamera(m2P2Camera);
-		}	
+		}
+
 	}
 	
 
@@ -516,6 +510,8 @@ void MyGame::createViewports(void)
 
 void MyGame::createScene(void)
 {   
+	
+
 	//tutorial 3
 	mSceneMgr->setSkyDome(true, "Examples/CloudySky", 5, 8); // um coubo em volta da camera com textura
 
@@ -682,6 +678,22 @@ GameObject * MyGame::getObjectofTurn()
 	return myObjects[currentTurn];
 }
 
+void MyGame::setupSound()
+	{
+		soundMgr = SoundManager::createManager();
+ 
+		std::cout << soundMgr->listAvailableDevices();
+ 
+		soundMgr->init();
+		soundMgr->setAudioPath( (char*) ".\\" );
+ 
+                // Just for testing
+		unsigned int audioId;
+		soundMgr->loadAudio( "Explosion.wav", &audioId, true);
+                soundMgr->playAudio( audioId, true );
+	}
+
+
 bool MyGame::keyPressed( const OIS::KeyEvent &arg )
 {
 	
@@ -748,7 +760,8 @@ bool MyGame::keyPressed( const OIS::KeyEvent &arg )
 	}
 	if (arg.key == OIS::KC_V)   // faz a fisica correr
     {
-		flag=!flag;			
+		flag=!flag;
+		setupSound();
 		
 		
     }
